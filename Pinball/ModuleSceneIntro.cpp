@@ -7,20 +7,11 @@
 #include "ModuleAudio.h"
 #include "ModulePhysics.h"
 
-#define BGWIDTH 172
-
 ModuleSceneIntro::ModuleSceneIntro(Application* app, bool start_enabled) : Module(app, start_enabled)
 {
-	circle = bg = NULL;
+	circle = box = rick = NULL;
 	ray_on = false;
 	sensed = false;
-
-	for (int i = 0; i < BGWIDTH * 5; i += BGWIDTH)
-	{
-		bgAnim.PushBack({ i, 0, BGWIDTH, 314 });
-	}
-	bgAnim.loop = true;
-	bgAnim.speed = 0.05f;
 }
 
 ModuleSceneIntro::~ModuleSceneIntro()
@@ -34,8 +25,12 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
-	circle = App->textures->Load("pinball/wheel.png");
-	bg = App->textures->Load("pinball/background.png");
+	circle = App->textures->Load("pinball/wheel.png"); 
+	box = App->textures->Load("pinball/crate.png");
+	rick = App->textures->Load("pinball/rick_head.png");
+	bonus_fx = App->audio->LoadFx("pinball/bonus.wav");
+
+	sensor = App->physics->CreateRectangleSensor(SCREEN_WIDTH / 2, SCREEN_HEIGHT, SCREEN_WIDTH, 50);
 
 	return ret;
 }
@@ -51,10 +46,6 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	currentAnim = &bgAnim;
-	SDL_Rect rect = currentAnim->GetCurrentFrame();
-	currentAnim->Update();
-	App->renderer->Blit(bg, 0, 0, &rect, 1.0f);
 	if(App->input->GetKey(SDL_SCANCODE_SPACE) == KEY_DOWN)
 	{
 		ray_on = !ray_on;
@@ -141,7 +132,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		App->renderer->Blit(circle, x, y, NULL, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(box, x, y, NULL, 1.0f, c->data->GetRotation());
 		if(ray_on)
 		{
 			int hit = c->data->RayCast(ray.x, ray.y, mouse.x, mouse.y, normal.x, normal.y);
@@ -157,7 +148,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		int x, y;
 		c->data->GetPosition(x, y);
-		App->renderer->Blit(bg, x, y, NULL, 1.0f, c->data->GetRotation());
+		App->renderer->Blit(rick, x, y, NULL, 1.0f, c->data->GetRotation());
 		c = c->next;
 	}
 

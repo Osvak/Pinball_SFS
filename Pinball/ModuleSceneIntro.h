@@ -3,7 +3,6 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "Globals.h"
-#include "Animation.h"
 
 class PhysBody;
 
@@ -26,11 +25,9 @@ public:
 	PhysBody* sensor;
 	bool sensed;
 
-	Animation* currentAnim = nullptr;
-	Animation bgAnim;
-	SDL_Texture* bg;
 	SDL_Texture* circle;
-
+	SDL_Texture* box;
+	SDL_Texture* rick;
 	uint bonus_fx;
 	p2Point<int> ray;
 	bool ray_on;
