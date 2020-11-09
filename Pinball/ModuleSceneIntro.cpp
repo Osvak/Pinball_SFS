@@ -307,7 +307,7 @@ update_status ModuleSceneIntro::Update()
 		lf->data->GetPosition(x, y);
 		b2Vec2 actualPosition = { (float)x,(float)y };
 		App->renderer->Blit(leftFlipper, 145, 810, &up, 1.0f);
-		lf->data->body->SetTransform(actualPosition, lf->data->body->GetAngle() + 0.001);
+		lf->data->body.
 	}
 	else
 	{
