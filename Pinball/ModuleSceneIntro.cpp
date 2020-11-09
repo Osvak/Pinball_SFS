@@ -108,7 +108,7 @@ bool ModuleSceneIntro::Start()
 		423, 133,
 		429, 129,
 		437, 134
-	}; App->physics->CreateChain(0, 0, walls, 154);
+	}; App->physics->CreateChain(0, 0, walls, 154, b2_staticBody);
 	int wall1[20] = {
 		226, 428,
 		264, 442,
@@ -120,7 +120,7 @@ bool ModuleSceneIntro::Start()
 		220, 386,
 		229, 410,
 		229, 421
-	}; App->physics->CreateChain(0, 0, wall1, 20);
+	}; App->physics->CreateChain(0, 0, wall1, 20, b2_staticBody);
 	int wall2[66] = {
 		172, 405,
 		85, 338,
@@ -155,7 +155,7 @@ bool ModuleSceneIntro::Start()
 		129, 305,
 		153, 313,
 		167, 318
-	}; App->physics->CreateChain(0, 0, wall2, 66);
+	}; App->physics->CreateChain(0, 0, wall2, 66, b2_staticBody);
 
 	int leftGround[28] = {
 		84, 879,
@@ -172,7 +172,7 @@ bool ModuleSceneIntro::Start()
 		140, 843,
 		167, 866,
 		167, 879
-	}; App->physics->CreateChain(0, 0, leftGround, 28);
+	}; App->physics->CreateChain(0, 0, leftGround, 28, b2_staticBody);
 	int rightGround[24] = {
 		370, 879,
 		370, 853,
@@ -186,7 +186,7 @@ bool ModuleSceneIntro::Start()
 		333, 845,
 		303, 867,
 		303, 879
-	}; App->physics->CreateChain(0, 0, rightGround, 24);
+	}; App->physics->CreateChain(0, 0, rightGround, 24, b2_staticBody);
 
 	int leftBumper[12] = {
 		121, 768,
@@ -195,7 +195,7 @@ bool ModuleSceneIntro::Start()
 		153, 770,
 		153, 783,
 		148, 783
-	}; App->physics->CreateChain(0, 0, leftBumper, 12);
+	}; App->physics->CreateChain(0, 0, leftBumper, 12, b2_staticBody);
 	int rightBumper[12] = {
 		320, 782,
 		328, 782,
@@ -203,7 +203,7 @@ bool ModuleSceneIntro::Start()
 		352, 727,
 		347, 723,
 		320, 772
-	}; App->physics->CreateChain(0, 0, rightBumper, 12);
+	}; App->physics->CreateChain(0, 0, rightBumper, 12, b2_staticBody);
 
 	int leftTube[26] = {
 		74, 546,
@@ -219,7 +219,7 @@ bool ModuleSceneIntro::Start()
 		55, 567,
 		58, 560,
 		73, 543
-	}; App->physics->CreateChain(0, 0, leftTube, 26);
+	}; App->physics->CreateChain(0, 0, leftTube, 26, b2_staticBody);
 	int rightTube[20] = {
 		352, 685,
 		353, 656,
@@ -231,7 +231,7 @@ bool ModuleSceneIntro::Start()
 		371, 557,
 		333, 681,
 		341, 685
-	}; App->physics->CreateChain(0, 0, rightTube, 20);
+	}; App->physics->CreateChain(0, 0, rightTube, 20, b2_staticBody);
 
 	int upWall1[12] = {
 		344, 152,
@@ -240,7 +240,7 @@ bool ModuleSceneIntro::Start()
 		346, 129,
 		340, 133,
 		340, 149
-	}; App->physics->CreateChain(0, 0, upWall1, 12);
+	}; App->physics->CreateChain(0, 0, upWall1, 12, b2_staticBody);
 	int upWall2[12] = {
 		386, 152,
 		393, 148,
@@ -248,7 +248,7 @@ bool ModuleSceneIntro::Start()
 		387, 129,
 		381, 134,
 		381, 149
-	}; App->physics->CreateChain(0, 0, upWall2, 12);
+	}; App->physics->CreateChain(0, 0, upWall2, 12, b2_staticBody);
 	int downWall[12] = {
 		88, 754,
 		93, 750,
@@ -256,7 +256,7 @@ bool ModuleSceneIntro::Start()
 		88, 722,
 		84, 726,
 		84, 751
-	}; App->physics->CreateChain(0, 0, downWall, 12);
+	}; App->physics->CreateChain(0, 0, downWall, 12, b2_staticBody);
 
 	int lf[14] = {
 		151, 847,
@@ -266,7 +266,7 @@ bool ModuleSceneIntro::Start()
 		149, 824,
 		143, 834,
 		145, 843
-	}; leftflippers.add(App->physics->CreateChain(0, 0, lf, 14));
+	}; leftflippers.add(App->physics->CreateChain(0, 0, lf, 14, b2_kinematicBody));
 	int rf[14] = {
 		263, 862,
 		322, 846,
@@ -275,7 +275,7 @@ bool ModuleSceneIntro::Start()
 		319, 823,
 		309, 825,
 		256, 857
-	}; rightflippers.add(App->physics->CreateChain(0, 0, rf, 14));
+	}; rightflippers.add(App->physics->CreateChain(0, 0, rf, 14, b2_kinematicBody));
 
 	return ret;
 }
@@ -292,7 +292,7 @@ bool ModuleSceneIntro::CleanUp()
 update_status ModuleSceneIntro::Update()
 {
 	p2List_item<PhysBody*>* lf = leftflippers.getFirst();
-	p2List_item<PhysBody*>* rf;
+	p2List_item<PhysBody*>* rf= rightflippers.getFirst();
 	App->renderer->Blit(bg, 0, 0, NULL, 1.0f);
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
@@ -303,7 +303,11 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
+		int x, y;
+		lf->data->GetPosition(x, y);
+		b2Vec2 actualPosition = { (float)x,(float)y };
 		App->renderer->Blit(leftFlipper, 145, 810, &up, 1.0f);
+		lf->data->body->SetTransform(actualPosition, lf->data->body->GetAngle() + 0.001);
 	}
 	else
 	{
