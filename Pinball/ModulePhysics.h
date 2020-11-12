@@ -42,13 +42,30 @@ public:
 	update_status PostUpdate();
 	bool CleanUp();
 
-	PhysBody* CreateCircle(int x, int y, int radius);
+	PhysBody* CreateCircle(int x, int y, int radius, b2BodyType type = b2_dynamicBody);
 	PhysBody* CreateRectangle(int x, int y, int width, int height);
 	PhysBody* CreateRectangleSensor(int x, int y, int width, int height);
-	PhysBody* CreateChain(int x, int y, int* points, int size, b2BodyType type);
+	PhysBody* CreateChain(int x, int y, int* points, int size, b2BodyType type, float density = 0.0f);
+	PhysBody* CreateFlipper(int x, int y, int* points, int size);
 
 	// b2ContactListener ---
 	void BeginContact(b2Contact* contact);
+
+
+	b2RevoluteJoint* l_fix;
+	b2RevoluteJoint* r_fix;
+	b2RevoluteJoint* l_fix2;
+	b2RevoluteJoint* r_fix2;
+
+	PhysBody* leftFlipper;
+	PhysBody* leftJoint;
+	PhysBody* rightFlipper;
+	PhysBody* rightJoint;
+
+	PhysBody* leftFlipper2;
+	PhysBody* leftJoint2;
+	PhysBody* rightFlipper2;
+	PhysBody* rightJoint2;
 
 private:
 

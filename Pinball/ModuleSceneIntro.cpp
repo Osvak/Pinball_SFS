@@ -27,8 +27,8 @@ bool ModuleSceneIntro::Start()
 
 	circle = App->textures->Load("pinball/ball.png"); 
 	bg = App->textures->Load("pinball/background.png");
-	leftFlipper = App->textures->Load("pinball/left_flipper.png");
-	rightFlipper = App->textures->Load("pinball/right_flipper.png");
+	leftFlipperTex = App->textures->Load("pinball/left_flipper.png");
+	rightFlipperTex = App->textures->Load("pinball/right_flipper.png");
 
 	int walls[154] = {
 		437, 832,
@@ -258,25 +258,6 @@ bool ModuleSceneIntro::Start()
 		84, 751
 	}; App->physics->CreateChain(0, 0, downWall, 12, b2_staticBody);
 
-	int lf[14] = {
-		151, 847,
-		211, 862,
-		218, 856,
-		161, 824,
-		149, 824,
-		143, 834,
-		145, 843
-	}; leftflippers.add(App->physics->CreateChain(0, 0, lf, 14, b2_kinematicBody));
-	int rf[14] = {
-		263, 862,
-		322, 846,
-		328, 837,
-		327, 828,
-		319, 823,
-		309, 825,
-		256, 857
-	}; rightflippers.add(App->physics->CreateChain(0, 0, rf, 14, b2_kinematicBody));
-
 	return ret;
 }
 
@@ -291,8 +272,6 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	p2List_item<PhysBody*>* lf = leftflippers.getFirst();
-	p2List_item<PhysBody*>* rf= rightflippers.getFirst();
 	App->renderer->Blit(bg, 0, 0, NULL, 1.0f);
 
 	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
@@ -303,24 +282,36 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
-		int x, y;
-		lf->data->GetPosition(x, y);
-		b2Vec2 actualPosition = { (float)x,(float)y };
-		App->renderer->Blit(leftFlipper, 145, 810, &up, 1.0f);
-		lf->data->body.
-	}
-	else
-	{
-		App->renderer->Blit(leftFlipper, 145, 824, &down, 1.0f);
+		App->physics->leftFlipper->body->ApplyForce({ 10, 80 }, { 0, 0 }, true);
+
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
+		{
+			App->physics->leftFlipper->body->ApplyForce({ -10, -80 }, { 0, 0 }, true);
+		}
+
+		App->physics->leftFlipper2->body->ApplyForce({ 10, 80 }, { 0, 0 }, true);
+
+		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
+		{
+			App->physics->leftFlipper2->body->ApplyForce({ -10, -80 }, { 0, 0 }, true);
+		}
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
-		App->renderer->Blit(rightFlipper, 255, 810, &up, 1.0f);
-	}
-	else
-	{
-		App->renderer->Blit(rightFlipper, 255, 824, &down, 1.0f);
+		App->physics->rightFlipper->body->ApplyForce({ -10, -80 }, { 0, 0 }, true);
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
+		{
+			App->physics->rightFlipper->body->ApplyForce({ 10, 80 }, { 0, 0 }, true);
+		}
+
+		App->physics->rightFlipper2->body->ApplyForce({ -10, -80 }, { 0, 0 }, true);
+
+		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
+		{
+			App->physics->rightFlipper2->body->ApplyForce({ 10, 80 }, { 0, 0 }, true);
+		}
 	}
 	
 
@@ -333,12 +324,17 @@ update_status ModuleSceneIntro::Update()
 
 	fVector normal(0.0f, 0.0f);
 
+	int x, y;
+	App->physics->leftFlipper->GetPosition(x, y);
+	b2Vec2 point = { (float)x, (float)y };
+	App->renderer->Blit(leftFlipperTex, x, y, NULL, 1.0f, App->physics->leftFlipper->body->GetAngle() * RADTODEG);
+	
 	while(c != NULL)
 	{
-		int x, y;
+		x, y;
 		b2Vec2 force = { 0.f, -2.f };
 		c->data->GetPosition(x, y);
-		b2Vec2 point = { (float)x, (float)y };
+		point = { (float)x, (float)y };
 		App->renderer->Blit(circle, x-6, y-6, NULL, 1.0f, c->data->GetRotation());
 		if ((App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN))
 		{

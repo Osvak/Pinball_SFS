@@ -19,8 +19,6 @@ public:
 
 public:
 	p2List<PhysBody*> circles;
-	p2List<PhysBody*> leftflippers;
-	p2List<PhysBody*> rightflippers;
 
 	PhysBody* sensor;
 	bool sensed;
@@ -28,10 +26,8 @@ public:
 	SDL_Texture* circle;
 	SDL_Texture* bg;
 
-	SDL_Texture* leftFlipper;
-	SDL_Texture* rightFlipper;
-	SDL_Rect down = { 0,0,73,39 };
-	SDL_Rect up = { 73,0,73,39 };
+	SDL_Texture* leftFlipperTex;
+	SDL_Texture* rightFlipperTex;
 
 	uint bonus_fx;
 	p2Point<int> ray;

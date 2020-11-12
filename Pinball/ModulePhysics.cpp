@@ -3,6 +3,7 @@
 #include "ModuleInput.h"
 #include "ModuleRender.h"
 #include "ModulePhysics.h"
+#include "ModuleSceneIntro.h"
 #include "p2Point.h"
 #include "math.h"
 
@@ -33,8 +34,77 @@ bool ModulePhysics::Start()
 
 	// needed to create joints like mouse joint
 	b2BodyDef bd;
-	b2JointDef jointDef;
 	ground = world->CreateBody(&bd);
+
+	// Pivot 0, 0
+	int lf[14] = {
+		73, 39,
+		73, 33,
+		16, 0,
+		5, 0,
+		1, 6,
+		1, 15,
+		7, 22
+	};
+	// Pivot 0, 0
+	int rf[14] = {
+		56, 0,
+		66, 0,
+		73, 5,
+		73, 14,
+		66, 22,
+		0, 39,
+		0, 33
+	};
+	leftFlipper = App->physics->CreateFlipper(150, 845, lf, 14);
+	rightFlipper = App->physics->CreateFlipper(255, 845, rf, 14);
+	leftFlipper2 = App->physics->CreateFlipper(178, 354, lf, 14);
+	rightFlipper2 = App->physics->CreateFlipper(320, 354, rf, 14);
+
+	leftJoint = App->physics->CreateCircle(158, 837, 6, b2_staticBody);
+	rightJoint = App->physics->CreateCircle(315, 837, 6, b2_staticBody);
+	leftJoint2 = App->physics->CreateCircle(186, 346, 6, b2_staticBody);
+	rightJoint2 = App->physics->CreateCircle(364, 346, 6, b2_staticBody);
+
+	b2RevoluteJointDef Def;
+	Def.bodyA = leftFlipper->body;
+	Def.bodyB = leftJoint->body;
+	Def.collideConnected = false;
+	Def.upperAngle = 45 * DEGTORAD;
+	Def.lowerAngle = 0 * DEGTORAD;
+	Def.enableLimit = true;
+	Def.localAnchorA.Set(PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
+	l_fix = (b2RevoluteJoint*)world->CreateJoint(&Def);
+
+	b2RevoluteJointDef Def2;
+	Def2.bodyA = rightFlipper->body;
+	Def2.bodyB = rightJoint->body;
+	Def2.collideConnected = false;
+	Def2.upperAngle = 0 * DEGTORAD;
+	Def2.lowerAngle = -45 * DEGTORAD;
+	Def2.enableLimit = true;
+	Def2.localAnchorA.Set(PIXEL_TO_METERS(60), PIXEL_TO_METERS(12));
+	r_fix = (b2RevoluteJoint*)world->CreateJoint(&Def2);
+
+	b2RevoluteJointDef Def3;
+	Def3.bodyA = leftFlipper2->body;
+	Def3.bodyB = leftJoint2->body;
+	Def3.collideConnected = false;
+	Def3.upperAngle = 45 * DEGTORAD;
+	Def3.lowerAngle = 20 * DEGTORAD;
+	Def3.enableLimit = true;
+	Def3.localAnchorA.Set(PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
+	l_fix2 = (b2RevoluteJoint*)world->CreateJoint(&Def3);
+
+	b2RevoluteJointDef Def4;
+	Def4.bodyA = rightFlipper2->body;
+	Def4.bodyB = rightJoint2->body;
+	Def4.collideConnected = false;
+	Def4.upperAngle = 0 * DEGTORAD;
+	Def4.lowerAngle = -45 * DEGTORAD;
+	Def4.enableLimit = true;
+	Def4.localAnchorA.Set(PIXEL_TO_METERS(60), PIXEL_TO_METERS(12));
+	r_fix2 = (b2RevoluteJoint*)world->CreateJoint(&Def4);
 
 	return true;
 }
@@ -58,10 +128,10 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type)
 {
 	b2BodyDef body;
-	body.type = b2_dynamicBody;
+	body.type = type;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 
 	b2Body* b = world->CreateBody(&body);
@@ -136,7 +206,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2BodyType type)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2BodyType type, float density)
 {
 	b2BodyDef body;
 	body.type = type;
@@ -157,6 +227,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2Body
 
 	b2FixtureDef fixture;
 	fixture.shape = &shape;
+	fixture.density = density;
 
 	b->CreateFixture(&fixture);
 
@@ -166,6 +237,39 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2Body
 	pbody->body = b;
 	b->SetUserData(pbody);
 	pbody->width = pbody->height = 0;
+
+	return pbody;
+}
+
+PhysBody* ModulePhysics::CreateFlipper(int x, int y, int* points, int size)
+{
+	b2BodyDef body;
+	body.type = b2_dynamicBody;
+	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
+
+	b2Body* b = world->CreateBody(&body);
+	b2PolygonShape box;
+
+	b2Vec2* p = new b2Vec2[size / 2];
+
+	for (uint i = 0; i < size / 2; ++i)
+	{
+		p[i].x = PIXEL_TO_METERS(points[i * 2 + 0]);
+		p[i].y = PIXEL_TO_METERS(points[i * 2 + 1]);
+	}
+
+	box.Set(p, size / 2);
+
+	b2FixtureDef fixture;
+	fixture.shape = &box;
+	fixture.density = 1.0f;
+
+	b->CreateFixture(&fixture);
+
+	PhysBody* pbody = new PhysBody();
+	pbody->body = b;
+	b->SetUserData(pbody);
+	pbody->height = pbody->width = 0;
 
 	return pbody;
 }
