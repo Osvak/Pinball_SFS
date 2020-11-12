@@ -25,6 +25,9 @@ public:
 
 	SDL_Texture* circle;
 	SDL_Texture* bg;
+	SDL_Texture* longTube;
+	SDL_Texture* leftSquare;
+	SDL_Texture* rightSquare;
 
 	SDL_Texture* leftFlipperTex;
 	SDL_Texture* rightFlipperTex;

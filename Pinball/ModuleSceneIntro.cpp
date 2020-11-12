@@ -29,6 +29,9 @@ bool ModuleSceneIntro::Start()
 	bg = App->textures->Load("pinball/background.png");
 	leftFlipperTex = App->textures->Load("pinball/left_flipper.png");
 	rightFlipperTex = App->textures->Load("pinball/right_flipper.png");
+	longTube = App->textures->Load("pinball/tube.png");
+	leftSquare = App->textures->Load("pinball/side.png");
+	rightSquare = App->textures->Load("pinball/side2.png");
 
 	int walls[154] = {
 		437, 832,
@@ -344,6 +347,10 @@ update_status ModuleSceneIntro::Update()
 		c->data->body->SetFixedRotation(false);
 		c = c->next;
 	}
+
+	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
+	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
+	App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
 
 	return UPDATE_CONTINUE;
 }
