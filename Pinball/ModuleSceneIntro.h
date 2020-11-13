@@ -19,9 +19,13 @@ public:
 
 public:
 	p2List<PhysBody*> circles;
-
-	PhysBody* sensor;
+	PhysBody* dead;
+	PhysBody* layer1;
+	PhysBody* lt;
+	PhysBody* wall;
+	bool createBall;
 	bool sensed;
+	bool up;
 
 	SDL_Texture* circle;
 	SDL_Texture* bg;

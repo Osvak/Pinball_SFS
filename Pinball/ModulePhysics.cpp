@@ -17,7 +17,7 @@ ModulePhysics::ModulePhysics(Application* app, bool start_enabled) : Module(app,
 {
 	world = NULL;
 	mouse_joint = NULL;
-	debug = true;
+	debug = false;
 }
 
 // Destructor
@@ -63,8 +63,8 @@ bool ModulePhysics::Start()
 
 	leftJoint = App->physics->CreateCircle(158, 837, 6, b2_staticBody);
 	rightJoint = App->physics->CreateCircle(315, 837, 6, b2_staticBody);
-	leftJoint2 = App->physics->CreateCircle(186, 346, 6, b2_staticBody);
-	rightJoint2 = App->physics->CreateCircle(364, 346, 6, b2_staticBody);
+	leftJoint2 = App->physics->CreateCircle(186, 342, 6, b2_staticBody);
+	rightJoint2 = App->physics->CreateCircle(362, 342, 6, b2_staticBody);
 
 	b2RevoluteJointDef Def;
 	Def.bodyA = leftFlipper->body;
@@ -91,7 +91,7 @@ bool ModulePhysics::Start()
 	Def3.bodyB = leftJoint2->body;
 	Def3.collideConnected = false;
 	Def3.upperAngle = 45 * DEGTORAD;
-	Def3.lowerAngle = 20 * DEGTORAD;
+	Def3.lowerAngle = 0 * DEGTORAD;
 	Def3.enableLimit = true;
 	Def3.localAnchorA.Set(PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
 	l_fix2 = (b2RevoluteJoint*)world->CreateJoint(&Def3);
@@ -131,6 +131,7 @@ update_status ModulePhysics::PreUpdate()
 PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type)
 {
 	b2BodyDef body;
+	body.bullet = true;
 	body.type = type;
 	body.position.Set(PIXEL_TO_METERS(x), PIXEL_TO_METERS(y));
 

@@ -112,17 +112,18 @@ bool ModuleSceneIntro::Start()
 		429, 129,
 		437, 134
 	}; App->physics->CreateChain(0, 0, walls, 154, b2_staticBody);
+	// Pivot 0, 0
 	int wall1[20] = {
-		226, 428,
-		264, 442,
-		263, 424,
-		255, 409,
-		253, 387,
-		244, 379,
-		219, 373,
-		220, 386,
-		229, 410,
-		229, 421
+		257, 441,
+		228, 429,
+		220, 421,
+		213, 415,
+		210, 406,
+		207, 375,
+		215, 372,
+		243, 378,
+		244, 385,
+		255, 410
 	}; App->physics->CreateChain(0, 0, wall1, 20, b2_staticBody);
 	int wall2[66] = {
 		172, 405,
@@ -261,6 +262,47 @@ bool ModuleSceneIntro::Start()
 		84, 751
 	}; App->physics->CreateChain(0, 0, downWall, 12, b2_staticBody);
 
+	// Pivot 0, 0
+	int longTube[44] = {
+		221, 420,
+		214, 417,
+		208, 390,
+		192, 252,
+		185, 196,
+		182, 152,
+		181, 119,
+		186, 108,
+		195, 98,
+		216, 87,
+		311, 87,
+		311, 93,
+		216, 93,
+		203, 98,
+		194, 107,
+		186, 118,
+		187, 136,
+		190, 175,
+		202, 293,
+		210, 364,
+		216, 387,
+		223, 405
+	}; lt = App->physics->CreateChain(0, 0, longTube, 44, b2_staticBody);
+	lt->body->SetActive(false);
+	// Pivot 0, 0
+	int wallPoint[8] = {
+		311, 47,
+		311, 12,
+		305, 12,
+		305, 47
+	}; wall = App->physics->CreateChain(0, 0, wallPoint, 8, b2_staticBody);
+	wall->body->SetActive(true);
+
+	dead = App->physics->CreateRectangleSensor(245, 950, 481, 2);
+	layer1 = App->physics->CreateRectangleSensor(195, 396, 15, 15);
+
+	createBall = true;
+	up = false;
+
 	return ret;
 }
 
@@ -277,11 +319,12 @@ update_status ModuleSceneIntro::Update()
 {
 	App->renderer->Blit(bg, 0, 0, NULL, 1.0f);
 
-	if(App->input->GetKey(SDL_SCANCODE_1) == KEY_DOWN)
+	if (createBall == true)
 	{
-		circles.add(App->physics->CreateCircle(App->input->GetMouseX(), App->input->GetMouseY(), 12));
+		circles.add(App->physics->CreateCircle(441, 802, 12));
+		circles.getLast()->data->listener = this;
+		createBall = false;
 	}
-	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
@@ -316,61 +359,76 @@ update_status ModuleSceneIntro::Update()
 			App->physics->rightFlipper2->body->ApplyForce({ 10, 80 }, { 0, 0 }, true);
 		}
 	}
-	
-
-	// Prepare for raycast ------------------------------------------------------
-	
-	iPoint mouse;
-	mouse.x = App->input->GetMouseX();
-	mouse.y = App->input->GetMouseY();
-	int ray_hit = ray.DistanceTo(mouse);
-
-	fVector normal(0.0f, 0.0f);
 
 	int x, y;
 	App->physics->leftFlipper->GetPosition(x, y);
 	b2Vec2 point = { (float)x, (float)y };
-	App->renderer->Blit(leftFlipperTex, x, y, NULL, 1.0f, App->physics->leftFlipper->body->GetAngle() * RADTODEG);
+	App->renderer->Blit(leftFlipperTex, x, y, NULL, 1.0f, App->physics->leftFlipper->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
+
+	App->physics->rightFlipper->GetPosition(x, y);
+	point = { (float)x, (float)y };
+	App->renderer->Blit(rightFlipperTex, x, y, NULL, 1.0f, App->physics->rightFlipper->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(60), PIXEL_TO_METERS(12));
+
+	App->physics->leftFlipper2->GetPosition(x, y);
+	point = { (float)x, (float)y };
+	App->renderer->Blit(leftFlipperTex, x, y, NULL, 1.0f, App->physics->leftFlipper2->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
+
+	App->physics->rightFlipper2->GetPosition(x, y);
+	point = { (float)x, (float)y };
+	App->renderer->Blit(rightFlipperTex, x, y, NULL, 1.0f, App->physics->rightFlipper2->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(60), PIXEL_TO_METERS(12));
 	
-	while(c != NULL)
+	p2List_item<PhysBody*>* c = circles.getFirst();
+
+	x, y;
+	b2Vec2 force = { 0.f, -2.f };
+	c->data->GetPosition(x, y);
+	point = { (float)x, (float)y };
+	if (up == false)
 	{
-		x, y;
-		b2Vec2 force = { 0.f, -2.f };
-		c->data->GetPosition(x, y);
-		point = { (float)x, (float)y };
-		App->renderer->Blit(circle, x-6, y-6, NULL, 1.0f, c->data->GetRotation());
-		if ((App->input->GetKey(SDL_SCANCODE_RETURN) == KEY_DOWN))
-		{
-			c->data->body->SetFixedRotation(true);
-			c->data->body->ApplyLinearImpulse(force, point, true);
-		}
-		c->data->body->SetFixedRotation(false);
-		c = c->next;
+		App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
 	}
+	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN))
+	{
+		c->data->body->SetFixedRotation(true);
+		c->data->body->ApplyLinearImpulse(force, point, true);
+	}
+	c->data->body->SetFixedRotation(false);
 
 	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
 	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
 	App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
+
+	if (up == true)
+	{
+		App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
+	}
 
 	return UPDATE_CONTINUE;
 }
 
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	int x, y;
-
-	App->audio->PlayFx(bonus_fx);
-
-	/*
-	if(bodyA)
+	//CreateBall();
+	if(bodyA->body == dead->body || bodyB->body == dead->body)
 	{
-		bodyA->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
+		createBall = true;
+		circles.clear();
 	}
 
-	if(bodyB)
+	if (bodyA->body == layer1->body || bodyB->body == layer1->body)
 	{
-		bodyB->GetPosition(x, y);
-		App->renderer->DrawCircle(x, y, 50, 100, 100, 100);
-	}*/
+		up = true;
+		if (!lt->body->IsActive())
+		{
+			lt->body->SetActive(true);
+		}
+		if (App->physics->leftFlipper2->body->IsActive())
+		{
+			App->physics->leftFlipper2->body->SetActive(false);
+		}
+		if (App->physics->leftJoint2->body->IsActive())
+		{
+			App->physics->leftJoint2->body->SetActive(false);
+		}
+	}
 }

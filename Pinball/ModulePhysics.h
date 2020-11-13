@@ -67,10 +67,11 @@ public:
 	PhysBody* rightFlipper2;
 	PhysBody* rightJoint2;
 
+	b2World* world;
+
 private:
 
 	bool debug;
-	b2World* world;
 	b2Joint* joint;
 	b2MouseJoint* mouse_joint;
 	b2Body* ground;
