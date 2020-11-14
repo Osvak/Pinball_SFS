@@ -23,6 +23,8 @@ public:
 	PhysBody* layer1;
 	PhysBody* lt;
 	PhysBody* wall;
+	PhysBody* leftBumper;
+	PhysBody* rightBumper;
 	bool createBall;
 	bool sensed;
 	bool up;
@@ -36,7 +38,11 @@ public:
 	SDL_Texture* leftFlipperTex;
 	SDL_Texture* rightFlipperTex;
 
-	uint bonus_fx;
+	uint flipperSound;
+	uint kickerSound;
+	uint deathSound;
+
 	p2Point<int> ray;
 	bool ray_on;
+	bool start;
 };
