@@ -25,6 +25,10 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
+	flipperSound = App->audio->LoadFx("pinball/flipper.wav");
+	kickerSound = App->audio->LoadFx("pinball/kicker.wav");
+	deathSound = App->audio->LoadFx("pinball/death.wav");
+
 	circle = App->textures->Load("pinball/ball.png"); 
 	bg = App->textures->Load("pinball/background.png");
 	leftFlipperTex = App->textures->Load("pinball/left_flipper.png");
@@ -192,22 +196,22 @@ bool ModuleSceneIntro::Start()
 		303, 879
 	}; App->physics->CreateChain(0, 0, rightGround, 24, b2_staticBody);
 
-	int leftBumper[12] = {
+	int leftBumperPoints[12] = {
 		121, 768,
 		122, 726,
 		127, 722,
 		153, 770,
 		153, 783,
 		148, 783
-	}; App->physics->CreateChain(0, 0, leftBumper, 12, b2_staticBody);
-	int rightBumper[12] = {
+	}; leftBumper = App->physics->CreateChain(0, 0, leftBumperPoints, 12, b2_staticBody);
+	int rightBumperPoints[12] = {
 		320, 782,
 		328, 782,
 		352, 767,
 		352, 727,
 		347, 723,
 		320, 772
-	}; App->physics->CreateChain(0, 0, rightBumper, 12, b2_staticBody);
+	}; rightBumper = App->physics->CreateChain(0, 0, rightBumperPoints, 12, b2_staticBody);
 
 	int leftTube[26] = {
 		74, 546,
@@ -302,6 +306,7 @@ bool ModuleSceneIntro::Start()
 
 	createBall = true;
 	up = false;
+	start = true;
 
 	return ret;
 }
@@ -324,6 +329,15 @@ update_status ModuleSceneIntro::Update()
 		circles.add(App->physics->CreateCircle(441, 802, 12));
 		circles.getLast()->data->listener = this;
 		createBall = false;
+	}
+
+	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
+	{
+		App->audio->PlayFx(flipperSound);
+	}
+	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_DOWN)
+	{
+		App->audio->PlayFx(flipperSound);
 	}
 
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
@@ -366,15 +380,15 @@ update_status ModuleSceneIntro::Update()
 	App->renderer->Blit(leftFlipperTex, x, y, NULL, 1.0f, App->physics->leftFlipper->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
 
 	App->physics->rightFlipper->GetPosition(x, y);
-	point = { (float)x, (float)y };
+	//point = { (float)x, (float)y };
 	App->renderer->Blit(rightFlipperTex, x, y, NULL, 1.0f, App->physics->rightFlipper->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(60), PIXEL_TO_METERS(12));
 
 	App->physics->leftFlipper2->GetPosition(x, y);
-	point = { (float)x, (float)y };
+	//point = { (float)x, (float)y };
 	App->renderer->Blit(leftFlipperTex, x, y, NULL, 1.0f, App->physics->leftFlipper2->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
 
 	App->physics->rightFlipper2->GetPosition(x, y);
-	point = { (float)x, (float)y };
+	//point = { (float)x, (float)y };
 	App->renderer->Blit(rightFlipperTex, x, y, NULL, 1.0f, App->physics->rightFlipper2->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(60), PIXEL_TO_METERS(12));
 	
 	p2List_item<PhysBody*>* c = circles.getFirst();
@@ -387,10 +401,12 @@ update_status ModuleSceneIntro::Update()
 	{
 		App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
 	}
-	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN))
+	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) && start == true)
 	{
+		App->audio->PlayFx(kickerSound);
 		c->data->body->SetFixedRotation(true);
 		c->data->body->ApplyLinearImpulse(force, point, true);
+		start = false;
 	}
 	c->data->body->SetFixedRotation(false);
 
@@ -411,13 +427,15 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	//CreateBall();
 	if(bodyA->body == dead->body || bodyB->body == dead->body)
 	{
+		App->audio->PlayFx(deathSound);
+		start = true;
 		createBall = true;
 		circles.clear();
 	}
 
 	if (bodyA->body == layer1->body || bodyB->body == layer1->body)
 	{
-		up = true;
+		/*up = true;
 		if (!lt->body->IsActive())
 		{
 			lt->body->SetActive(true);
@@ -429,6 +447,11 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		if (App->physics->leftJoint2->body->IsActive())
 		{
 			App->physics->leftJoint2->body->SetActive(false);
-		}
+		}*/
+	}
+
+	if (bodyA->body == leftBumper->body || bodyB->body == leftBumper->body)
+	{
+		
 	}
 }
