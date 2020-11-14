@@ -41,7 +41,8 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>C:\Users\Himar\Documents\GitHub\Pinball_SFS\Pinball\Box2D\libx86\Debug;$(LibraryPath)</LibraryPath>
+    <LibraryPath>.\Box2D\libx86\Debug;$(LibraryPath)</LibraryPath>
+    <IncludePath>.\Game;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LibraryPath>C:\Users\Himar\Documents\GitHub\Pinball_SFS\Pinball\Box2D\libx86\Release;$(LibraryPath)</LibraryPath>
