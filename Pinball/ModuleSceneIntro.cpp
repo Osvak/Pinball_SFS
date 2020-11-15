@@ -33,6 +33,8 @@ bool ModuleSceneIntro::Start()
 	bumperSound = App->audio->LoadFx("pinball/bumper.wav");
 	skySound = App->audio->LoadFx("pinball/sky.wav");
 	multiSound = App->audio->LoadFx("pinball/multi.wav");
+	song = App->audio->LoadFx("pinball/song.wav");
+	barSound = App->audio->LoadFx("pinball/barSound.wav");
 
 	circle = App->textures->Load("pinball/ball.png"); 
 	bg = App->textures->Load("pinball/background.png");
@@ -44,6 +46,9 @@ bool ModuleSceneIntro::Start()
 	bumperTex = App->textures->Load("pinball/bumper.png");
 	skyTex = App->textures->Load("pinball/sky.png");
 	multiTex = App->textures->Load("pinball/multipliers.png");
+	barTex = App->textures->Load("pinball/bar.png");
+	copaTex = App->textures->Load("pinball/copa.png");
+	shootTex = App->textures->Load("pinball/shoot.png");
 
 	int walls[154] = {
 		437, 832,
@@ -313,17 +318,24 @@ bool ModuleSceneIntro::Start()
 	layer1 = App->physics->CreateRectangleSensor(195, 396, 15, 15);
 	startPoint = App->physics->CreateRectangleSensor(450, 802, 15, 15);
 
-	pointS = App->physics->CreateRectangleSensor(325, 140, 15, 15);
-	pointK = App->physics->CreateRectangleSensor(368, 140, 15, 15);
-	pointY = App->physics->CreateRectangleSensor(410, 140, 15, 15);
+	pointS = App->physics->CreateRectangleSensor(325, 140, 15, 10);
+	pointK = App->physics->CreateRectangleSensor(368, 140, 15, 10);
+	pointY = App->physics->CreateRectangleSensor(410, 140, 15, 10);
+
+	pointB = App->physics->CreateRectangleSensor(235, 433, 15, 10);
+	pointA = App->physics->CreateRectangleSensor(267, 450, 15, 10);
+	pointR = App->physics->CreateRectangleSensor(290, 465, 15, 10);
+	pointCopa = App->physics->CreateRectangleSensor(106, 728, 10, 10);
 
 	bumper1 = App->physics->CreateCircle(139, 190, 22, b2_staticBody);
-	bumper2 = App->physics->CreateCircle(120, 250, 22, b2_staticBody);
+	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody);
 	bumper3 = App->physics->CreateCircle(190, 250, 22, b2_staticBody);
 
 	createBall = true;
 	up = false;
 	start = true;
+
+	//App->audio->PlayFx(song, -1);
 
 	return ret;
 }
@@ -342,12 +354,67 @@ update_status ModuleSceneIntro::Update()
 	//1RST LAYER
 	App->renderer->Blit(bg, 0, 0, NULL, 1.0f);
 
+	if (lifes == 0)
+	{
+		previousScore = currentScore;
+		for (int i = 0; i < MAX_SCORES; i++)
+		{
+			if (scoreArray[i] != NULL)
+				continue;
+
+			else
+			{
+				scoreArray[i] = currentScore;
+			}
+		}
+		for (int i = 0; i < MAX_SCORES; i++)
+		{
+			if (scoreArray[i] != NULL)
+			{
+				if (scoreArray[i] > scoreArray[i + 1])
+				{
+					highestScore = scoreArray[i];
+				}
+				else
+				{
+					highestScore = scoreArray[i + 1];
+				}
+			}
+		}
+		currentScore = 0;
+		lifes = 5;
+	}
+
+	if (secondCreateBall == true)
+	{
+		ballsCount += 1;
+		secondCircles.add(App->physics->CreateCircle(353, 68, 12));
+		secondCircles.getLast()->data->listener = this;
+		secondballisalive = true;
+		secondCreateBall = false;
+	}
+
 	if (createBall == true)
 	{
+		ballsCount += 1;
 		multi = 1;
+		sCond = false;
+		kCond = false;
+		yCond = false;
+		bCond = false;
+		aCond = false;
+		rCond = false;
+		copaCond = false;
 		circles.add(App->physics->CreateCircle(441, 802, 12));
 		circles.getLast()->data->listener = this;
 		createBall = false;
+	}
+
+	if (ballsCount == 0)
+	{
+		start = true;
+		createBall = true;
+		lifes -= 1;
 	}
 
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
@@ -361,6 +428,7 @@ update_status ModuleSceneIntro::Update()
 
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
+		App->renderer->Blit(shootTex, 193, 815, NULL, 1.0f);
 		App->physics->leftFlipper->body->ApplyForce({ 10, 70 }, { 0, 0 }, true);
 
 		if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_UP)
@@ -378,6 +446,7 @@ update_status ModuleSceneIntro::Update()
 
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
+		App->renderer->Blit(shootTex, 193, 815, NULL, 1.0f);
 		App->physics->rightFlipper->body->ApplyForce({ -10, -50 }, { 0, 0 }, true);
 
 		if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_UP)
@@ -391,6 +460,54 @@ update_status ModuleSceneIntro::Update()
 		{
 			App->physics->rightFlipper2->body->ApplyForce({ 10, 70 }, { 0, 0 }, true);
 		}
+	}
+
+	if (bCond == true)
+	{
+		App->renderer->Blit(barTex, 207, 443, &bRect, 1.0f);
+	}
+	if (aCond == true)
+	{
+		App->renderer->Blit(barTex, 238, 457, &aRect, 1.0f);
+	}
+	if (rCond == true)
+	{
+		App->renderer->Blit(barTex, 269, 474, &rRect, 1.0f);
+	}
+	if (copaCond == true)
+	{
+		App->renderer->Blit(copaTex, 98, 686, NULL, 1.0f);
+	}
+
+	if (multi == 2)
+	{
+		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
+	}
+	else if (multi == 4)
+	{
+		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
+		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
+	}
+	else if (multi == 6)
+	{
+		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
+		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
+		App->renderer->Blit(multiTex, 220, 785, &x6, 1.0f);
+	}
+	else if (multi == 8)
+	{
+		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
+		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
+		App->renderer->Blit(multiTex, 220, 785, &x6, 1.0f);
+		App->renderer->Blit(multiTex, 250, 788, &x8, 1.0f);
+	}
+	else if (multi == 10)
+	{
+		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
+		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
+		App->renderer->Blit(multiTex, 220, 785, &x6, 1.0f);
+		App->renderer->Blit(multiTex, 250, 788, &x8, 1.0f);
+		App->renderer->Blit(multiTex, 285, 798, &x10, 1.0f);
 	}
 
 	int x, y;
@@ -454,42 +571,11 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(skyTex, 394, 104, &yRect, 1.0f);
 	}
 
-	if (multi == 2)
-	{
-		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
-	}
-	else if (multi == 4)
-	{
-		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
-		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
-	}
-	else if (multi == 6)
-	{
-		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
-		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
-		App->renderer->Blit(multiTex, 220, 785, &x6, 1.0f);
-	}
-	else if (multi == 8)
-	{
-		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
-		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
-		App->renderer->Blit(multiTex, 220, 785, &x6, 1.0f);
-		App->renderer->Blit(multiTex, 250, 788, &x8, 1.0f);
-	}
-	else if (multi == 10)
-	{
-		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
-		App->renderer->Blit(multiTex, 188, 789, &x4, 1.0f);
-		App->renderer->Blit(multiTex, 220, 785, &x6, 1.0f);
-		App->renderer->Blit(multiTex, 250, 788, &x8, 1.0f);
-		App->renderer->Blit(multiTex, 285, 798, &x10, 1.0f);
-	}
-
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	x, y;
 	b2Vec2 force = { 0.f, -2.f };
-	c->data->GetPosition(x, y);
+	c->data->GetPosition(x, y);0
 	b2Vec2 point = { (float)x, (float)y };
 	if (up == false)
 	{
@@ -505,6 +591,28 @@ update_status ModuleSceneIntro::Update()
 	}
 	c->data->body->SetFixedRotation(false);
 
+	if (secondballisalive == true)
+	{
+		c = secondCircles.getFirst();
+		x, y;
+		force = { 0.f, -2.f };
+		c->data->GetPosition(x, y);
+		point = { (float)x, (float)y };
+		if (up == false)
+		{
+			//2ND LAYER
+			App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
+		}
+		if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) && start == true)
+		{
+			App->audio->PlayFx(kickerSound);
+			c->data->body->SetFixedRotation(true);
+			c->data->body->ApplyLinearImpulse(force, point, true);
+			start = false;
+		}
+		c->data->body->SetFixedRotation(false);
+	}
+
 	//3RD LAYER
 	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
 	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
@@ -514,10 +622,8 @@ update_status ModuleSceneIntro::Update()
 	{
 		App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
 	}
-	sprintf_s(scoreText, 10, "%d", score);
-	App->fonts->BlitText(10, 10, scoreFont, scoreText);
 
-	if (skyCount == 3)
+	if (sCond == true && kCond == true && yCond == true)
 	{
 		App->audio->PlayFx(multiSound);
 		if (multi == 1)
@@ -531,8 +637,16 @@ update_status ModuleSceneIntro::Update()
 		sCond = false;
 		kCond = false;
 		yCond = false;
-		skyCount = 0;
 	}
+
+	sprintf_s(scoreText, 10, "%d", currentScore);
+	sprintf_s(previousScoreText, 10, "%d", previousScore);
+	sprintf_s(highestScoreText, 10, "%d", highestScore);
+	sprintf_s(lifesText, 10, "%d", lifes);
+	App->fonts->BlitText(10, 10, scoreFont, scoreText);
+	App->fonts->BlitText(10, 40, scoreFont, previousScoreText);
+	App->fonts->BlitText(10, 70, scoreFont, highestScoreText);
+	App->fonts->BlitText(10, 100, scoreFont, lifesText);
 
 	return UPDATE_CONTINUE;
 }
@@ -548,10 +662,20 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	//CreateBall();
 	if(bodyA->body == dead->body || bodyB->body == dead->body)
 	{
-		App->audio->PlayFx(deathSound);
-		start = true;
-		createBall = true;
-		circles.clear();
+		if (bodyA->body == circles.getFirst()->data->body || bodyB->body == circles.getFirst()->data->body)
+		{
+			App->audio->PlayFx(deathSound);
+			circles.clear();
+		}
+		/*if (secondCircles.getFirst()->data->body != NULL)
+		{
+			if ((bodyA->body == secondCircles.getFirst()->data->body || bodyB->body == secondCircles.getFirst()->data->body) && secondballisalive == true)
+			{
+				App->audio->PlayFx(deathSound);
+				secondCircles.clear();
+				secondballisalive = false;
+			}
+		}*/
 	}
 
 	if (bodyA->body == layer1->body || bodyB->body == layer1->body)
@@ -589,7 +713,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		App->audio->PlayFx(bumperSound);
 		touching1 = true;
-		score += 100*multi;
+		currentScore += 100*multi;
 	}
 	else
 	{
@@ -600,7 +724,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		App->audio->PlayFx(bumperSound);
 		touching2 = true;
-		score += 100*multi;
+		currentScore += 100*multi;
 	}
 	else
 	{
@@ -611,7 +735,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		App->audio->PlayFx(bumperSound);
 		touching3 = true;
-		score += 100*multi;
+		currentScore += 100*multi;
 	}
 	else
 	{
@@ -624,7 +748,6 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			App->audio->PlayFx(skySound);
 			yCond = true;
-			skyCount += 1;
 		}
 	}
 	if (bodyA->body == pointK->body || bodyB->body == pointK->body)
@@ -633,7 +756,6 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			App->audio->PlayFx(skySound);
 			kCond = true;
-			skyCount += 1;
 		}
 	}
 	if (bodyA->body == pointS->body || bodyB->body == pointS->body)
@@ -642,7 +764,41 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			App->audio->PlayFx(skySound);
 			sCond = true;
-			skyCount += 1;
+		}
+	}
+
+	if (bodyA->body == pointB->body || bodyB->body == pointB->body)
+	{
+		if (bCond != true)
+		{
+			App->audio->PlayFx(barSound);
+			bCond = true;
+			secondCreateBall = true;
+		}
+	}
+	if (bodyA->body == pointA->body || bodyB->body == pointA->body)
+	{
+		if (aCond != true)
+		{
+			App->audio->PlayFx(barSound);
+			aCond = true;
+		}
+	}
+	if (bodyA->body == pointR->body || bodyB->body == pointR->body)
+	{
+		if (rCond != true)
+		{
+			App->audio->PlayFx(barSound);
+			rCond = true;
+		}
+	}
+	if (bodyA->body == pointCopa->body || bodyB->body == pointCopa->body)
+	{
+		if (copaCond != true)
+		{
+			//App->audio->PlayFx(barSound);
+			copaCond = true;
+			secondCreateBall = true;
 		}
 	}
 }

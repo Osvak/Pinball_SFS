@@ -3,8 +3,10 @@
 #include "p2List.h"
 #include "p2Point.h"
 #include "Globals.h"
+#define MAX_SCORES 50
 
 class PhysBody;
+
 
 class ModuleSceneIntro : public Module
 {
@@ -20,6 +22,7 @@ public:
 
 public:
 	p2List<PhysBody*> circles;
+	p2List<PhysBody*> secondCircles;
 	PhysBody* dead;
 	PhysBody* layer1;
 	PhysBody* startPoint;
@@ -36,7 +39,15 @@ public:
 	PhysBody* pointK;
 	PhysBody* pointY;
 
+	PhysBody* pointB;
+	PhysBody* pointA;
+	PhysBody* pointR;
+	PhysBody* pointCopa;
+
 	bool createBall;
+	bool secondCreateBall;
+	int ballsCount = 0;
+	bool secondballisalive;
 	bool sensed;
 	bool up;
 	bool touching1 = false;
@@ -50,6 +61,7 @@ public:
 	SDL_Texture* rightSquare;
 	SDL_Texture* bumperTex;
 	SDL_Texture* scoreTex;
+	SDL_Texture* shootTex;
 
 	SDL_Texture* skyTex;
 	SDL_Rect sRect = { 0,0,19,25 };
@@ -58,7 +70,6 @@ public:
 	bool kCond = false;
 	SDL_Rect yRect = { 39,0,20,25 };
 	bool yCond = false;
-	int skyCount = 0;
 
 	SDL_Texture* multiTex;
 	SDL_Rect x2 = { 0,0,37,25 };
@@ -67,6 +78,16 @@ public:
 	SDL_Rect x8 = { 109,0,36,25 };
 	SDL_Rect x10 = { 145,0,36,25 };
 	int multi = 1;
+
+	SDL_Texture* copaTex;
+	bool copaCond = false;
+	SDL_Texture* barTex;
+	SDL_Rect bRect = { 0,0,31,30 };
+	bool bCond = false;
+	SDL_Rect aRect = { 31,0,31,30 };
+	bool aCond = false;
+	SDL_Rect rRect = { 62,0,31,30 };
+	bool rCond = false;
 
 	SDL_Texture* leftFlipperTex;
 	SDL_Texture* rightFlipperTex;
@@ -77,12 +98,21 @@ public:
 	uint bumperSound;
 	uint skySound;
 	uint multiSound;
+	uint song;
+	uint barSound;
 
 	p2Point<int> ray;
 	bool ray_on;
 	bool start;
 
-	int score = 0000;
+	int lifes = 5;
+	int scoreArray[MAX_SCORES];
+	int previousScore = 0000;
+	int currentScore = 0000;
+	int highestScore = 0000;
 	int scoreFont = -1;
 	char scoreText[10] = { "\0" };
+	char previousScoreText[10] = { "\0" };
+	char highestScoreText[10] = { "\0" };
+	char lifesText[10] = { "\0" };
 };
