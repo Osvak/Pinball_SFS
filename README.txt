@@ -20,6 +20,8 @@
   MODO DEBUG:
 
 	- F1: activates/deactivates the shapes silhouettes
+	- X: sets the position of ball 1 to the mouse cursor
+	- Z: sets the position of ball 2 to the mouse cursor (when the 2nd ball is active)
 	
   GAME DESCRIPTION:
 
