@@ -4,6 +4,9 @@
 #include "Module.h"
 #include "SDL/include/SDL.h"
 
+struct SDL_Window;
+struct SDL_Surface;
+
 class Application;
 
 class ModuleWindow : public Module
@@ -26,6 +29,9 @@ public:
 
 	//The surface contained by the window
 	SDL_Surface* screen_surface;
+
+private:
+	SDL_Surface* icon = nullptr;
 };
 
 #endif // __ModuleWindow_H__
