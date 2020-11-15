@@ -804,7 +804,10 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			App->audio->PlayFx(barSound);
 			copaCond = true;
-			secondCreateBall = true;
+			if (bCond == true && aCond == true && rCond == true)
+			{
+				secondCreateBall = true;
+			}
 		}
 	}
 }
