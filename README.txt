@@ -25,6 +25,15 @@
 
 	In this game you are able to play a version of Glamour Pinball developed by Suspending For Sure
 	You have to try acomplish the highest score interacting, whith various things in the environment, as bumbers, signs and stars.
+  
+  BONUSES:
+  
+  	- Multiplyer: If you complete the word SKY by passing through the 3 tunels a x2 multiplyer is aplied. 
+		      After completing SKY the letters will reset and the multiplayer can be activated again.
+	
+	- Extra Ball: When gathering up the letters B, A, R, in the middle of the screen, and passing through the glass icon, 
+		      an extra ball will be obtained. You can use the second ball by pressing the DOWN arrow.
+	
 
   LINK TO THE ORIGINAL GAME:
 
