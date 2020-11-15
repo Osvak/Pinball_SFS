@@ -27,6 +27,7 @@ bool ModuleSceneIntro::Start()
 
 	App->renderer->camera.x = App->renderer->camera.y = 0;
 
+	// Sounds Load
 	flipperSound = App->audio->LoadFx("pinball/flipper.wav");
 	kickerSound = App->audio->LoadFx("pinball/kicker.wav");
 	deathSound = App->audio->LoadFx("pinball/death.wav");
@@ -36,6 +37,7 @@ bool ModuleSceneIntro::Start()
 	song = App->audio->LoadFx("pinball/song.wav");
 	barSound = App->audio->LoadFx("pinball/barSound.wav");
 
+	// Textures Load
 	circle = App->textures->Load("pinball/ball.png"); 
 	bg = App->textures->Load("pinball/background.png");
 	leftFlipperTex = App->textures->Load("pinball/left_flipper.png");
@@ -50,6 +52,7 @@ bool ModuleSceneIntro::Start()
 	copaTex = App->textures->Load("pinball/copa.png");
 	shootTex = App->textures->Load("pinball/shoot.png");
 
+	// Colliders' shapes creation
 	int walls[154] = {
 		437, 832,
 		468, 832,
@@ -351,9 +354,10 @@ bool ModuleSceneIntro::CleanUp()
 // Update: draw background
 update_status ModuleSceneIntro::Update()
 {
-	//1RST LAYER
+	// 1RST LAYER
 	App->renderer->Blit(bg, 0, 0, NULL, 1.0f);
 
+	// Keep track of lifes and score
 	if (lifes == 0)
 	{
 		previousScore = currentScore;
@@ -385,6 +389,7 @@ update_status ModuleSceneIntro::Update()
 		lifes = 5;
 	}
 
+	// Creation of the second ball
 	if (secondCreateBall == true)
 	{
 		ballsCount += 1;
@@ -394,6 +399,7 @@ update_status ModuleSceneIntro::Update()
 		secondCreateBall = false;
 	}
 
+	// Creation of the first ball
 	if (createBall == true)
 	{
 		ballsCount += 1;
@@ -417,6 +423,7 @@ update_status ModuleSceneIntro::Update()
 		lifes -= 1;
 	}
 
+	// Flippers sound
 	if (App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_DOWN)
 	{
 		App->audio->PlayFx(flipperSound);
@@ -426,6 +433,7 @@ update_status ModuleSceneIntro::Update()
 		App->audio->PlayFx(flipperSound);
 	}
 
+	// Flippers  logic
 	if(App->input->GetKey(SDL_SCANCODE_LEFT) == KEY_REPEAT)
 	{
 		App->renderer->Blit(shootTex, 193, 815, NULL, 1.0f);
@@ -443,7 +451,6 @@ update_status ModuleSceneIntro::Update()
 			App->physics->leftFlipper2->body->ApplyForce({ -10, -70 }, { 0, 0 }, true);
 		}
 	}
-
 	if (App->input->GetKey(SDL_SCANCODE_RIGHT) == KEY_REPEAT)
 	{
 		App->renderer->Blit(shootTex, 193, 815, NULL, 1.0f);
@@ -462,6 +469,7 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
+	// Bar buttons texture draw
 	if (bCond == true)
 	{
 		App->renderer->Blit(barTex, 207, 443, &bRect, 1.0f);
@@ -479,6 +487,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(copaTex, 98, 686, NULL, 1.0f);
 	}
 
+	// Multipliers texture draw
 	if (multi == 2)
 	{
 		App->renderer->Blit(multiTex, 150, 798, &x2, 1.0f);
@@ -510,6 +519,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(multiTex, 285, 798, &x10, 1.0f);
 	}
 
+	// Flippers drawing
 	int x, y;
 	App->physics->leftFlipper->GetPosition(x, y);
 	App->renderer->Blit(leftFlipperTex, x, y, NULL, 1.0f, App->physics->leftFlipper->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(12), PIXEL_TO_METERS(12));
@@ -523,6 +533,7 @@ update_status ModuleSceneIntro::Update()
 	App->physics->rightFlipper2->GetPosition(x, y);
 	App->renderer->Blit(rightFlipperTex, x, y, NULL, 1.0f, App->physics->rightFlipper2->body->GetAngle() * RADTODEG, PIXEL_TO_METERS(60), PIXEL_TO_METERS(12));
 
+	// Bumpers drawing
 	SDL_Rect noTouching = { 0, 0, 56, 53 };
 	SDL_Rect Touching = { 56, 0, 56, 53 };
 	if (touching1 == true)
@@ -558,6 +569,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(bumperTex, x - 5, y - 3, &noTouching, 1.0f);
 	}
 
+	// Sky buttons texture drawing
 	if (sCond == true)
 	{
 		App->renderer->Blit(skyTex, 319, 104, &sRect, 1.0f);
@@ -573,6 +585,7 @@ update_status ModuleSceneIntro::Update()
 
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
+	// Second circle logic
 	if (secondballisalive == true)
 	{
 		p2List_item<PhysBody*>* sc = secondCircles.getFirst();
@@ -582,7 +595,7 @@ update_status ModuleSceneIntro::Update()
 		b2Vec2 point = { (float)x, (float)y };
 		if (up == false)
 		{
-			//2ND LAYER
+			// 2ND LAYER
 			App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, sc->data->GetRotation());
 		}
 		if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) && start == true)
@@ -595,6 +608,7 @@ update_status ModuleSceneIntro::Update()
 		sc->data->body->SetFixedRotation(false);
 	}
 
+	// First circle logic
 	if (c != NULL)
 	{
 		b2Vec2 force = { 0.f, -2.f };
@@ -615,7 +629,7 @@ update_status ModuleSceneIntro::Update()
 		c->data->body->SetFixedRotation(false);
 	}
 
-	//3RD LAYER
+	// 3RD LAYER
 	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
 	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
 	App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
@@ -625,6 +639,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
 	}
 
+	// Multipliers logic
 	if (sCond == true && kCond == true && yCond == true)
 	{
 		App->audio->PlayFx(multiSound);
@@ -641,6 +656,7 @@ update_status ModuleSceneIntro::Update()
 		yCond = false;
 	}
 
+	// Scores Text
 	sprintf_s(scoreText, 10, "%d", currentScore);
 	sprintf_s(previousScoreText, 10, "%d", previousScore);
 	sprintf_s(highestScoreText, 10, "%d", highestScore);
@@ -659,6 +675,7 @@ update_status ModuleSceneIntro::PostUpdate()
 	return UPDATE_CONTINUE;
 }
 
+// Control collisions
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
 	//CreateBall();
