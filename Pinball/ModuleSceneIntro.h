@@ -90,6 +90,24 @@ public:
 	PhysBody* lobbyWall;
 	PhysBody* hotelAreaCollider;
 
+	// Right ramp control
+	bool rightRampFlag = false;
+	PhysBody* rightRampOutter;
+	PhysBody* rightRampInner;
+	PhysBody* rightRampWall;
+	PhysBody* rightRampInCollider;
+	PhysBody* rightRampOutCollider;
+
+	//Left ramp control
+	bool leftRampFlag = false;
+	PhysBody* leftRampOutter;
+	PhysBody* leftRampInner;
+	PhysBody* leftRampWall;
+	PhysBody* leftRampInCollider;
+	PhysBody* leftRampOutCollider;
+	PhysBody* leftRampOutCollider2;
+
+	// Textures
 	SDL_Texture* circle;
 	SDL_Texture* bg;
 	SDL_Texture* longTube;
@@ -99,6 +117,7 @@ public:
 	SDL_Texture* scoreTex;
 	SDL_Texture* shootTex;
 
+	// SKY Textures and flags
 	SDL_Texture* skyTex;
 	SDL_Rect sRect = { 0,0,19,25 };
 	bool sCond = false;
@@ -107,6 +126,7 @@ public:
 	SDL_Rect yRect = { 39,0,20,25 };
 	bool yCond = false;
 
+	// Multipliers Textures and flags
 	SDL_Texture* multiTex;
 	SDL_Rect x2 = { 0,0,37,25 };
 	SDL_Rect x4 = { 37,0,36,25 };
@@ -115,6 +135,7 @@ public:
 	SDL_Rect x10 = { 145,0,36,25 };
 	int multi = 1;
 
+	// BAR Textures and flags
 	SDL_Texture* copaTex;
 	bool copaCond = false;
 	SDL_Texture* barTex;
@@ -148,6 +169,7 @@ public:
 	bool ray_on;
 	bool start;
 
+	// Lifes and scores variables
 	int lifes = 5;
 	int scoreArray[MAX_SCORES];
 	int previousScore = 0000;

@@ -308,6 +308,7 @@ bool ModuleSceneIntro::Start()
 			84, 751
 		}; App->physics->CreateChain(0, 0, downWall, 12, b2_staticBody);
 
+		// Walls in between floors
 		int entranceWall[20] = {
 			445, 68,
 			445, 89,
@@ -338,6 +339,69 @@ bool ModuleSceneIntro::Start()
 			307, 462,
 			285, 451,
 		}; lobbyWall = App->physics->CreateChain(0, 0, lobbyWallPath, 16, b2_staticBody);
+
+		// Right Ramp
+		int rightRampPathOut[12] = {
+			324, 490,
+			325, 520,
+			366, 560,
+			368, 554,
+			330, 517,
+			329, 490,
+		}; rightRampOutter = App->physics->CreateChain(0, 0, rightRampPathOut, 12, b2_staticBody);
+		int rightRampPathIn[12] = {
+			358, 428,
+			358, 502,
+			381, 530,
+			383, 523,
+			364, 500,
+			364, 428,
+		}; rightRampInner = App->physics->CreateChain(0, 0, rightRampPathIn, 12, b2_staticBody);
+		int rightRampWallPath[8] = {
+			378, 525,
+			382, 528,
+			374, 560,
+			371, 557,			
+		}; rightRampWall = App->physics->CreateChain(0, 0, rightRampWallPath, 8, b2_staticBody);
+
+		// Left Ramp
+		int leftRampPathOut[36] = {
+			69, 427,
+			81, 422,
+			93, 421,
+			113, 425,
+			126, 434,
+			136, 451,
+			135, 476,
+			126, 493,
+			73, 543,
+			74, 546, /**/
+			129, 496,
+			142, 481,
+			142, 452,
+			134, 436,
+			120, 422,
+			100, 415,
+			71, 418,
+			62, 425
+		}; leftRampOutter = App->physics->CreateChain(0, 0, leftRampPathOut, 36, b2_staticBody);
+		int leftRampPathIn[18] = {
+			59, 509,
+			84, 484,
+			80, 477,
+			79, 457,
+			88, 450,
+			103, 451,
+			110, 463,
+			101, 479,
+			63, 515,
+		}; leftRampInner = App->physics->CreateChain(0, 0, leftRampPathIn, 18, b2_staticBody);
+		int leftRampWallPath[8]{
+			74, 546,
+			69, 551,
+			58, 520,
+			63, 515,
+		}; leftRampWall = App->physics->CreateChain(0, 0, leftRampWallPath, 8, b2_staticBody);
 
 		// Pivot 0, 0
 		int longTube[44] = {
@@ -404,6 +468,15 @@ bool ModuleSceneIntro::Start()
 	// Lobby Wall Colliders
 	lobbyAreaCollider2 = App->physics->CreateRectangleSensor(290, 432, 50, 4);
 	hotelAreaCollider = App->physics->CreateRectangleSensor(291, 493, 60, 4);
+
+	// Right Ramp Colliders
+	rightRampInCollider = App->physics->CreateRectangleSensor(378, 456, 10, 10);
+	rightRampOutCollider = App->physics->CreateRectangleSensor(386, 554, 10, 10);
+
+	// Left Ramp Colliders
+	leftRampInCollider = App->physics->CreateRectangleSensor(65, 459, 10, 10);
+	leftRampOutCollider = App->physics->CreateRectangleSensor(58, 542, 10, 10);
+	leftRampOutCollider2 = App->physics->CreateRectangleSensor(68, 491, 10, 10);
 
 	createBall = true;
 	up = false;
@@ -541,6 +614,7 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
+	// ----- CHANGING COLLIDERS -----
 	// Starting Tunnel Wall Control
 	if (startTunnel == true)
 	{
@@ -569,6 +643,34 @@ update_status ModuleSceneIntro::Update()
 	else
 	{
 		lobbyWall->body->SetActive(false);
+	}
+
+	// Right Ramp Control
+	if (rightRampFlag == true)
+	{
+		rightRampOutter->body->SetActive(true);
+		rightRampInner->body->SetActive(true);
+		rightRampWall->body->SetActive(false);
+	}
+	else
+	{
+		rightRampOutter->body->SetActive(false);
+		rightRampInner->body->SetActive(false);
+		rightRampWall->body->SetActive(true);
+	}
+
+	// Left Ramp Control
+	if (leftRampFlag == true)
+	{
+		leftRampOutter->body->SetActive(true);
+		leftRampInner->body->SetActive(true);
+		leftRampWall->body->SetActive(false);
+	}
+	else
+	{
+		leftRampOutter->body->SetActive(false);
+		leftRampInner->body->SetActive(false);
+		leftRampWall->body->SetActive(true);
 	}
 
 	// BAR buttons texture draw
@@ -776,7 +878,10 @@ update_status ModuleSceneIntro::Update()
 	// 3RD LAYER
 	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
 	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
-	App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
+	if (rightRampFlag == false)
+	{
+		App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
+	}
 
 	if (up == true)
 	{
@@ -822,7 +927,7 @@ update_status ModuleSceneIntro::PostUpdate()
 // Control collisions
 void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 {
-	//CreateBall();
+	// Death control
 	if(bodyA->body == dead->body || bodyB->body == dead->body)
 	{
 		if (circles.getFirst() != NULL)
@@ -846,49 +951,57 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 	}
 
-	if (bodyA->body == layer1->body || bodyB->body == layer1->body)
-	{
-		/*up = true;
-		if (!lt->body->IsActive())
-		{
-			lt->body->SetActive(true);
-		}
-		if (App->physics->leftFlipper2->body->IsActive())
-		{
-			App->physics->leftFlipper2->body->SetActive(false);
-		}
-		if (App->physics->leftJoint2->body->IsActive())
-		{
-			App->physics->leftJoint2->body->SetActive(false);
-		}*/
-	}
-
+	// Start collision
 	if (bodyA->body == startPoint->body || bodyB->body == startPoint->body)
 	{
 		start = true;
 		startTunnel = true;
 	}
 
+	// Top of start tunnel
 	if (bodyA->body == startTunnelCollider->body || bodyB->body == startTunnelCollider->body)
 	{
 		startTunnel = false;
 	}
 
+	// Sky area collisions
 	if (bodyA->body == skyAreaCollider->body || bodyB->body == skyAreaCollider->body)
 	{
 		startTunnel = true;
 		skyWallFlag = false;
 	}
 
+	// Lobby area collisions
 	if (bodyA->body == lobbyAreaCollider->body || bodyB->body == lobbyAreaCollider->body || bodyA->body == lobbyAreaCollider2->body || bodyB->body == lobbyAreaCollider2->body)
 	{
 		skyWallFlag = true;
 		lobbyWallFlag = false;
 	}
 
+	// Hotel area collisions
 	if (bodyA->body == hotelAreaCollider->body || bodyB->body == hotelAreaCollider->body)
 	{
 		lobbyWallFlag = true;
+	}
+
+	// Right ramp collisions
+	if (bodyA->body == rightRampInCollider->body || bodyB->body == rightRampInCollider->body)
+	{
+		rightRampFlag = true;
+	}
+	if (bodyA->body == rightRampOutCollider->body || bodyB->body == rightRampOutCollider->body)
+	{
+		rightRampFlag = false;
+	}
+
+	// Left ramp collisions
+	if (bodyA->body == leftRampInCollider->body || bodyB->body == leftRampInCollider->body)
+	{
+		leftRampFlag = true;
+	}
+	if (bodyA->body == leftRampOutCollider->body || bodyB->body == leftRampOutCollider->body || bodyA->body == leftRampOutCollider2->body || bodyB->body == leftRampOutCollider2->body)
+	{
+		leftRampFlag = false;
 	}
 
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)
