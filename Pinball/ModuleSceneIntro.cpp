@@ -306,13 +306,18 @@ bool ModuleSceneIntro::Start()
 			84, 751
 		}; App->physics->CreateChain(0, 0, downWall, 12, b2_staticBody);
 
-		/*int entranceWall[10] = {
+		int entranceWall[20] = {
 			445, 68,
-			445, 93,
-			440, 111,
-			431, 121,
+			445, 89,
+			442, 104,
+			437, 115,
+			431, 124,
 			423, 132,
-		}; App->physics->CreateChain(0, 0, entranceWall, 10, b2_staticBody);*/
+			431, 124,
+			437, 115,
+			442, 104,
+			445, 89,
+		}; startWall = App->physics->CreateChain(0, 0, entranceWall, 20, b2_staticBody);
 
 		// Pivot 0, 0
 		int longTube[44] = {
@@ -376,6 +381,9 @@ bool ModuleSceneIntro::Start()
 	bumper1 = App->physics->CreateCircle(139, 190, 22, b2_staticBody);
 	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody);
 	bumper3 = App->physics->CreateCircle(190, 250, 22, b2_staticBody);
+
+	startTunnelCollider = App->physics->CreateRectangleSensor(450, 120, 10, 10);
+	startWallCollider = App->physics->CreateRectangleSensor(367, 113, 80, 10);
 
 	createBall = true;
 	up = false;
@@ -513,7 +521,17 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
-	// Bar buttons texture draw
+	// Starting Tunnel in & out control
+	if (startTunnel == true)
+	{
+		startWall->body->SetActive(true);
+	}
+	else
+	{
+		startWall->body->SetActive(false);
+	}
+
+	// BAR buttons texture draw
 	if (bCond == true)
 	{
 		App->renderer->Blit(barTex, 207, 443, &bRect, 1.0f);
@@ -796,6 +814,17 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	if (bodyA->body == startPoint->body || bodyB->body == startPoint->body)
 	{
 		start = true;
+		startTunnel = true;
+	}
+
+	if (bodyA->body == startTunnelCollider->body || bodyB->body == startTunnelCollider->body)
+	{
+		startTunnel = false;
+	}
+
+	if (bodyA->body == startWallCollider->body || bodyB->body == startWallCollider->body)
+	{
+		startTunnel = true;
 	}
 
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)

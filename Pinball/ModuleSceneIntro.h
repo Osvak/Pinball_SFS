@@ -73,6 +73,13 @@ public:
 	bool touchingWhiteStar3 = false;
 	bool touchingWhiteStar4 = false;
 
+	// Start Tunnel control
+	bool startTunnel = false;
+	PhysBody* startWall;
+	PhysBody* startWallCollider; // Outside of wall
+	PhysBody* startTunnelCollider; // Inside of wall
+
+
 	SDL_Texture* circle;
 	SDL_Texture* bg;
 	SDL_Texture* longTube;
