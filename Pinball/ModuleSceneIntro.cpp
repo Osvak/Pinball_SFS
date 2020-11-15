@@ -54,6 +54,7 @@ bool ModuleSceneIntro::Start()
 	copaTex = App->textures->Load("pinball/copa.png");
 	shootTex = App->textures->Load("pinball/shoot.png");
 	starsTex = App->textures->Load("pinball/stars.png");
+	lobbyTex = App->textures->Load("pinball/lobby.png");
 
 	// Colliders' shapes creation
 	{
@@ -470,6 +471,13 @@ bool ModuleSceneIntro::Start()
 	dead = App->physics->CreateRectangleSensor(245, 950, 481, 2);
 	startPoint = App->physics->CreateRectangleSensor(450, 802, 15, 15);
 
+	// Lobby button
+	lobbyL = App->physics->CreateRectangleSensor(200, 178, 12, 5);
+	lobbyO = App->physics->CreateRectangleSensor(237, 178, 12, 5);
+	lobbyB = App->physics->CreateRectangleSensor(320, 180, 10, 5);
+	lobbyB2 = App->physics->CreateRectangleSensor(349, 193, 10, 5);
+	lobbyY = App->physics->CreateRectangleSensor(376, 207, 10, 5);
+
 	pointS = App->physics->CreateRectangleSensor(325, 140, 15, 10);
 	pointK = App->physics->CreateRectangleSensor(368, 140, 15, 10);
 	pointY = App->physics->CreateRectangleSensor(410, 140, 15, 10);
@@ -497,7 +505,7 @@ bool ModuleSceneIntro::Start()
 	skyAreaCollider = App->physics->CreateRectangleSensor(367, 113, 80, 10);
 
 	// SKY Wall Colliders
-	lobbyAreaCollider = App->physics->CreateRectangleSensor(365, 220, 80, 4);
+	lobbyAreaCollider = App->physics->CreateRectangleSensor(365, 230, 80, 4);
 
 	// Lobby Wall Colliders
 	lobbyAreaCollider2 = App->physics->CreateRectangleSensor(290, 432, 50, 4);
@@ -518,11 +526,12 @@ bool ModuleSceneIntro::Start()
 	middleRampOutCollider = App->physics->CreateRectangleSensor(297, 72, 10, 10);
 	middleRampOutCollider2 = App->physics->CreateRectangleSensor(192, 405, 10, 10);
 
+
 	createBall = true;
 	up = false;
 	start = true;
 
-	//App->audio->PlayFx(song, -1);
+	App->audio->PlayFx(song, -1);
 
 	return ret;
 }
@@ -669,10 +678,17 @@ update_status ModuleSceneIntro::Update()
 	if (skyWallFlag == true)
 	{
 		skyWall->body->SetActive(true);
+		lobbyB->body->SetActive(true);
+		lobbyB2->body->SetActive(true);
+		lobbyY->body->SetActive(true);
 	}
 	else
 	{
 		skyWall->body->SetActive(false);
+		lobbyB->body->SetActive(false);
+		lobbyB2->body->SetActive(false);
+		lobbyY->body->SetActive(false);
+		
 	}
 
 	// Lobby Wall Control
@@ -883,6 +899,27 @@ update_status ModuleSceneIntro::Update()
 	if (touchingWhiteStar4 == true)
 	{
 		App->renderer->Blit(starsTex, 290, 640, &whiteRect, 1.0f);
+	}
+
+	if (lobbyLFlag == true)
+	{
+		App->renderer->Blit(lobbyTex, 205, 182, &lobbyLRect, 1.0f);
+	}
+	if (lobbyOFlag == true)
+	{
+		App->renderer->Blit(lobbyTex, 241, 182, &lobbyORect, 1.0f);
+	}
+	if (lobbyBFlag == true)
+	{
+		App->renderer->Blit(lobbyTex, 280, 185, &lobbyBRect, 1.0f);
+	}
+	if (lobbyB2Flag == true)
+	{
+		App->renderer->Blit(lobbyTex, 317, 199, &lobbyBRect, 1.0f);
+	}
+	if (lobbyYFlag == true)
+	{
+		App->renderer->Blit(lobbyTex, 350, 219, &lobbyYRect, 1.0f);
 	}
 
 	p2List_item<PhysBody*>* c = circles.getFirst();
@@ -1200,6 +1237,57 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	else
 	{
 		touchingWhiteStar4 = false;
+	}
+
+	if (bodyA->body == lobbyL->body || bodyB->body == lobbyL->body)
+	{
+		App->audio->PlayFx(kickSound);
+		lobbyLFlag = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		lobbyLFlag = false;
+	}
+	if (bodyA->body == lobbyO->body || bodyB->body == lobbyO->body)
+	{
+		App->audio->PlayFx(kickSound);
+		lobbyOFlag = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		lobbyOFlag = false;
+	}
+	if (bodyA->body == lobbyB->body || bodyB->body == lobbyB->body)
+	{
+		App->audio->PlayFx(kickSound);
+		lobbyBFlag = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		lobbyBFlag = false;
+	}
+	if (bodyA->body == lobbyB2->body || bodyB->body == lobbyB2->body)
+	{
+		App->audio->PlayFx(kickSound);
+		lobbyB2Flag = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		lobbyB2Flag = false;
+	}
+	if (bodyA->body == lobbyY->body || bodyB->body == lobbyY->body)
+	{
+		App->audio->PlayFx(kickSound);
+		lobbyYFlag = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		lobbyYFlag = false;
 	}
 
 	if (bodyA->body == pointY->body || bodyB->body == pointY->body)

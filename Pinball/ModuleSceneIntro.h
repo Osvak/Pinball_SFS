@@ -97,7 +97,7 @@ public:
 	PhysBody* rightRampOutCollider;
 	PhysBody* rightRampOutCollider2;
 
-	//Left ramp control
+	// Left ramp control
 	bool leftRampFlag = false;
 	PhysBody* leftRampOutter;
 	PhysBody* leftRampInner;
@@ -106,7 +106,7 @@ public:
 	PhysBody* leftRampOutCollider;
 	PhysBody* leftRampOutCollider2;
 
-	//Middle ramp control
+	// Middle ramp control
 	bool middleRampFlag = false;
 	PhysBody* middleRampRight;
 	PhysBody* middleRampLeft;
@@ -114,6 +114,24 @@ public:
 	PhysBody* middleRampOutCollider;
 	PhysBody* middleRampOutCollider2;
 	PhysBody* wall3;
+
+	// Lobby buttons
+	PhysBody* lobbyL;
+	PhysBody* lobbyO;
+	PhysBody* lobbyB;
+	PhysBody* lobbyB2;
+	PhysBody* lobbyY;
+	bool lobbyLFlag = false;
+	bool lobbyOFlag = false;
+	bool lobbyBFlag = false;
+	bool lobbyB2Flag = false;
+	bool lobbyYFlag = false;
+	SDL_Texture* lobbyTex;
+	SDL_Rect lobbyLRect = { 0,0,25,26 };
+	SDL_Rect lobbyORect = { 25,0,25,26 };
+	SDL_Rect lobbyBRect = { 50,0,25,26 };
+	SDL_Rect lobbyYRect = { 100,0,25,26 };
+
 
 	// Textures
 	SDL_Texture* circle;
