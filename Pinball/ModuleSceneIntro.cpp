@@ -882,9 +882,7 @@ update_status ModuleSceneIntro::Update()
 
 	// 3RD LAYER
 	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
-
 	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
-
 	App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
 
 	// Second circle logic
@@ -942,17 +940,6 @@ update_status ModuleSceneIntro::Update()
 			c->data->body->SetTransform(b2Vec2(PIXEL_TO_METERS(App->input->GetMouseX()), PIXEL_TO_METERS(App->input->GetMouseY())), 0);
 		}
 	}
-
-	
-
-	/*if (leftRampFlag == false)
-	{
-		App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
-	}
-	if (rightRampFlag == false)
-	{
-		App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
-	}*/
 
 	if (up == true)
 	{
