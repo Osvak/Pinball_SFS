@@ -139,18 +139,19 @@ bool ModuleSceneIntro::Start()
 			437, 134
 		}; App->physics->CreateChain(0, 0, walls, 158, b2_staticBody);
 		// Pivot 0, 0
-		int wall1[20] = {
+		int wall1[22] = {
 			258, 444,
 			228, 429,
 			220, 421,
 			213, 415,
 			210, 406,
 			207, 375,
+			210, 362,
 			215, 372,
 			243, 378,
 			244, 385,
 			255, 410
-		}; App->physics->CreateChain(0, 0, wall1, 20, b2_staticBody);
+		}; App->physics->CreateChain(0, 0, wall1, 22, b2_staticBody);
 		int wall2[70] = {
 			172, 405,
 			85, 338,
@@ -678,10 +679,16 @@ update_status ModuleSceneIntro::Update()
 	if (lobbyWallFlag == true)
 	{
 		lobbyWall->body->SetActive(true);
+		pointB->body->SetActive(true);
+		pointA->body->SetActive(true);
+		pointR->body->SetActive(true);
 	}
 	else
 	{
 		lobbyWall->body->SetActive(false);
+		pointB->body->SetActive(false);
+		pointA->body->SetActive(false);
+		pointR->body->SetActive(false);
 	}
 
 	// Right Ramp Control
@@ -881,9 +888,10 @@ update_status ModuleSceneIntro::Update()
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	// 3RD LAYER
-	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
-	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
-	App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
+	if (middleRampFlag == true)
+	{
+		App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
+	}
 
 	// Second circle logic
 	if (secondballisalive == true)
@@ -944,6 +952,22 @@ update_status ModuleSceneIntro::Update()
 	if (up == true)
 	{
 		App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
+	}
+
+
+
+	if (middleRampFlag == false)
+	{
+		App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
+	}
+
+	if (leftRampFlag == false)
+	{
+		App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
+	}
+	if (rightRampFlag == false)
+	{
+		App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
 	}
 
 	// Multipliers logic
@@ -1071,6 +1095,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		middleRampFlag = false;
 	}
+
 
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)
 	{
