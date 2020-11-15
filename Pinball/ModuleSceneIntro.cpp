@@ -319,6 +319,15 @@ bool ModuleSceneIntro::Start()
 			445, 89,
 		}; startWall = App->physics->CreateChain(0, 0, entranceWall, 20, b2_staticBody);
 
+		int skyWallPath[12] = {
+			305, 154,
+			305, 163,
+			391, 206,
+			423, 208,
+			391, 206,
+			305, 163,
+		}; skyWall = App->physics->CreateChain(0, 0, skyWallPath, 12, b2_staticBody);
+
 		// Pivot 0, 0
 		int longTube[44] = {
 			221, 420,
@@ -346,15 +355,8 @@ bool ModuleSceneIntro::Start()
 		}; lt = App->physics->CreateChain(0, 0, longTube, 44, b2_staticBody);
 		lt->body->SetActive(false);
 		// Pivot 0, 0
-		int wallPoint[8] = {
-			311, 47,
-			311, 12,
-			305, 12,
-			305, 47
-		}; wall = App->physics->CreateChain(0, 0, wallPoint, 8, b2_staticBody);
-	}
 
-	wall->body->SetActive(true);
+	}
 
 	dead = App->physics->CreateRectangleSensor(245, 950, 481, 2);
 	layer1 = App->physics->CreateRectangleSensor(195, 396, 15, 15);
@@ -382,8 +384,12 @@ bool ModuleSceneIntro::Start()
 	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody);
 	bumper3 = App->physics->CreateCircle(190, 250, 22, b2_staticBody);
 
+	// Start Wall Colliders
 	startTunnelCollider = App->physics->CreateRectangleSensor(450, 120, 10, 10);
-	startWallCollider = App->physics->CreateRectangleSensor(367, 113, 80, 10);
+	skyAreaCollider = App->physics->CreateRectangleSensor(367, 113, 80, 10);
+
+	// SKY Wall Colliders
+	skyWallBottomCollider = App->physics->CreateRectangleSensor(365, 220, 80, 4);
 
 	createBall = true;
 	up = false;
@@ -529,6 +535,16 @@ update_status ModuleSceneIntro::Update()
 	else
 	{
 		startWall->body->SetActive(false);
+	}
+
+	// SKY Wall Control
+	if (skyWallFlag == true)
+	{
+		skyWall->body->SetActive(true);
+	}
+	else
+	{
+		skyWall->body->SetActive(false);
 	}
 
 	// BAR buttons texture draw
@@ -822,9 +838,15 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		startTunnel = false;
 	}
 
-	if (bodyA->body == startWallCollider->body || bodyB->body == startWallCollider->body)
+	if (bodyA->body == skyAreaCollider->body || bodyB->body == skyAreaCollider->body)
 	{
 		startTunnel = true;
+		skyWallFlag = false;
+	}
+
+	if (bodyA->body == skyWallBottomCollider->body || bodyB->body == skyWallBottomCollider->body)
+	{
+		skyWallFlag = true;
 	}
 
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)

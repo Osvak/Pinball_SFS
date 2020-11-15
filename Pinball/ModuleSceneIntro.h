@@ -76,8 +76,13 @@ public:
 	// Start Tunnel control
 	bool startTunnel = false;
 	PhysBody* startWall;
-	PhysBody* startWallCollider; // Outside of wall
+	PhysBody* skyAreaCollider; // Outside of wall
 	PhysBody* startTunnelCollider; // Inside of wall
+
+	// Sky Wall cotnrol
+	bool skyWallFlag = true;
+	PhysBody* skyWall;
+	PhysBody* skyWallBottomCollider;
 
 
 	SDL_Texture* circle;
