@@ -735,6 +735,12 @@ update_status ModuleSceneIntro::Update()
 			start = false;
 		}
 		c->data->body->SetFixedRotation(false);
+
+		//Ball to mouse debug
+
+		if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN) {
+			c->data->body->SetTransform(b2Vec2(PIXEL_TO_METERS(App->input->GetMouseX()), PIXEL_TO_METERS(App->input->GetMouseY())), 0);
+		}
 	}
 
 	// 3RD LAYER
