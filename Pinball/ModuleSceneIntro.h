@@ -24,9 +24,7 @@ public:
 	p2List<PhysBody*> circles;
 	p2List<PhysBody*> secondCircles;
 	PhysBody* dead;
-	PhysBody* layer1;
 	PhysBody* startPoint;
-	PhysBody* lt;
 	PhysBody* wall;
 	PhysBody* leftBumper;
 	PhysBody* rightBumper;
@@ -97,6 +95,7 @@ public:
 	PhysBody* rightRampWall;
 	PhysBody* rightRampInCollider;
 	PhysBody* rightRampOutCollider;
+	PhysBody* rightRampOutCollider2;
 
 	//Left ramp control
 	bool leftRampFlag = false;
@@ -106,6 +105,15 @@ public:
 	PhysBody* leftRampInCollider;
 	PhysBody* leftRampOutCollider;
 	PhysBody* leftRampOutCollider2;
+
+	//Middle ramp control
+	bool middleRampFlag = false;
+	PhysBody* middleRampRight;
+	PhysBody* middleRampLeft;
+	PhysBody* middleRampInCollider;
+	PhysBody* middleRampOutCollider;
+	PhysBody* middleRampOutCollider2;
+	PhysBody* wall3;
 
 	// Textures
 	SDL_Texture* circle;

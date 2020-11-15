@@ -151,7 +151,7 @@ bool ModuleSceneIntro::Start()
 			244, 385,
 			255, 410
 		}; App->physics->CreateChain(0, 0, wall1, 20, b2_staticBody);
-		int wall2[66] = {
+		int wall2[70] = {
 			172, 405,
 			85, 338,
 			70, 307,
@@ -166,12 +166,14 @@ bool ModuleSceneIntro::Start()
 			140, 47,
 			158, 43,
 			310, 43,
-			310, 152,
-			304, 152,
-			303, 140,
-			292, 122,
-			282, 112,
-			266, 104,
+			310, 56,
+			213, 56,
+			197, 58,
+			184, 62,
+			168, 72,
+			155, 84,
+			151, 97,
+			150, 103,
 			143, 104,
 			118, 110,
 			100, 123,
@@ -184,10 +186,10 @@ bool ModuleSceneIntro::Start()
 			107, 295,
 			129, 305,
 			153, 313,
-			167, 318
-		}; App->physics->CreateChain(0, 0, wall2, 66, b2_staticBody);
+			167, 318,
+		}; App->physics->CreateChain(0, 0, wall2, 70, b2_staticBody);
 		// Pivot 0, 0
-		int wall3[34] = {
+		int wall3Path[34] = {
 			115, 172,
 			106, 172,
 			107, 165,
@@ -205,7 +207,23 @@ bool ModuleSceneIntro::Start()
 			144, 160,
 			132, 160,
 			122, 166
-		}; App->physics->CreateChain(0, 0, wall3, 34, b2_staticBody);
+		}; wall3 = App->physics->CreateChain(0, 0, wall3Path, 34, b2_staticBody);
+
+		int lobbyTopWallPath[26] = {
+			305, 154,
+			303, 140,
+			298, 130,
+			291, 121,
+			285, 115,
+			278, 110,
+			267, 106,
+			256, 102,
+			235, 102,
+			196, 102,
+			216, 93,
+			310, 93,
+			310, 154,
+		}; App->physics->CreateChain(0, 0, lobbyTopWallPath, 26, b2_staticBody);
 
 		int leftGround[28] = {
 			84, 879,
@@ -403,8 +421,8 @@ bool ModuleSceneIntro::Start()
 			63, 515,
 		}; leftRampWall = App->physics->CreateChain(0, 0, leftRampWallPath, 8, b2_staticBody);
 
-		// Pivot 0, 0
-		int longTube[44] = {
+		// Middle Ramp
+		int middleRampRightPath[44] = {
 			221, 420,
 			214, 417,
 			208, 390,
@@ -427,13 +445,28 @@ bool ModuleSceneIntro::Start()
 			210, 364,
 			216, 387,
 			223, 405
-		}; lt = App->physics->CreateChain(0, 0, longTube, 44, b2_staticBody);
-		lt->body->SetActive(false);
-		// Pivot 0, 0
+		};  middleRampRight = App->physics->CreateChain(0, 0, middleRampRightPath, 44, b2_staticBody);
+		int middleRampLeftPath[32] = {
+			167, 318,
+			166, 291,
+			161, 257,
+			158, 225,
+			152, 178,
+			148, 140,
+			148, 116,
+			150, 103,
+			143, 103,
+			140, 120,
+			140, 146,
+			146, 181,
+			152, 227,
+			155, 257,
+			160, 293,
+			162, 318,
+		}; middleRampLeft = App->physics->CreateChain(0, 0, middleRampLeftPath, 32, b2_staticBody);
 	}
 
 	dead = App->physics->CreateRectangleSensor(245, 950, 481, 2);
-	layer1 = App->physics->CreateRectangleSensor(195, 396, 15, 15);
 	startPoint = App->physics->CreateRectangleSensor(450, 802, 15, 15);
 
 	pointS = App->physics->CreateRectangleSensor(325, 140, 15, 10);
@@ -471,12 +504,18 @@ bool ModuleSceneIntro::Start()
 
 	// Right Ramp Colliders
 	rightRampInCollider = App->physics->CreateRectangleSensor(378, 456, 10, 10);
-	rightRampOutCollider = App->physics->CreateRectangleSensor(386, 554, 10, 10);
+	rightRampOutCollider = App->physics->CreateRectangleSensor(397, 563, 10, 10);
+	rightRampOutCollider2 = App->physics->CreateRectangleSensor(373, 505, 10, 10);
 
 	// Left Ramp Colliders
 	leftRampInCollider = App->physics->CreateRectangleSensor(65, 459, 10, 10);
-	leftRampOutCollider = App->physics->CreateRectangleSensor(58, 542, 10, 10);
+	leftRampOutCollider = App->physics->CreateRectangleSensor(43, 572, 10, 10);
 	leftRampOutCollider2 = App->physics->CreateRectangleSensor(68, 491, 10, 10);
+
+	// Middle Ramp Colliders
+	middleRampInCollider = App->physics->CreateRectangleSensor(191, 370, 10, 10);
+	middleRampOutCollider = App->physics->CreateRectangleSensor(297, 72, 10, 10);
+	middleRampOutCollider2 = App->physics->CreateRectangleSensor(192, 405, 10, 10);
 
 	createBall = true;
 	up = false;
@@ -673,6 +712,28 @@ update_status ModuleSceneIntro::Update()
 		leftRampWall->body->SetActive(true);
 	}
 
+	// Middle Ramp Control
+	if (middleRampFlag == true)
+	{
+		middleRampRight->body->SetActive(true);
+		middleRampLeft->body->SetActive(true);
+		wall3->body->SetActive(false);
+		bumper1->body->SetActive(false);
+		bumper3->body->SetActive(false);
+		App->physics->leftJoint2->body->SetActive(false);
+		App->physics->leftFlipper2->body->SetActive(false);
+	}
+	else
+	{
+		middleRampRight->body->SetActive(false);
+		middleRampLeft->body->SetActive(false);
+		wall3->body->SetActive(true);
+		bumper1->body->SetActive(true);
+		bumper3->body->SetActive(true);
+		App->physics->leftJoint2->body->SetActive(true);
+		App->physics->leftFlipper2->body->SetActive(true);
+	}
+
 	// BAR buttons texture draw
 	if (bCond == true)
 	{
@@ -819,6 +880,13 @@ update_status ModuleSceneIntro::Update()
 
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
+	// 3RD LAYER
+	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
+
+	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
+
+	App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
+
 	// Second circle logic
 	if (secondballisalive == true)
 	{
@@ -875,13 +943,16 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
-	// 3RD LAYER
-	App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
-	App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
+	
+
+	/*if (leftRampFlag == false)
+	{
+		App->renderer->Blit(leftSquare, 54, 415, NULL, 1.0f);
+	}
 	if (rightRampFlag == false)
 	{
 		App->renderer->Blit(rightSquare, 325, 451, NULL, 1.0f);
-	}
+	}*/
 
 	if (up == true)
 	{
@@ -1002,6 +1073,16 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	if (bodyA->body == leftRampOutCollider->body || bodyB->body == leftRampOutCollider->body || bodyA->body == leftRampOutCollider2->body || bodyB->body == leftRampOutCollider2->body)
 	{
 		leftRampFlag = false;
+	}
+
+	// Middle ramp collisions
+	if (bodyA->body == middleRampInCollider->body || bodyB->body == middleRampInCollider->body)
+	{
+		middleRampFlag = true;
+	}
+	if (bodyA->body == middleRampOutCollider->body || bodyB->body == middleRampOutCollider->body || bodyA->body == middleRampOutCollider2->body || bodyB->body == middleRampOutCollider2->body)
+	{
+		middleRampFlag = false;
 	}
 
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)
