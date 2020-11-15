@@ -682,7 +682,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		p2List_item<PhysBody*>* sc = secondCircles.getFirst();
 		sc = secondCircles.getFirst();
-		b2Vec2 force = { 0.f, -2.f };
+		b2Vec2 force = { 0.f, -2.05f };
 		sc->data->GetPosition(x, y);
 		b2Vec2 point = { (float)x, (float)y };
 		if (up == false)
@@ -703,7 +703,7 @@ update_status ModuleSceneIntro::Update()
 	// First circle logic
 	if (c != NULL)
 	{
-		b2Vec2 force = { 0.f, -2.f };
+		b2Vec2 force = { 0.f, -2.05f };
 		c->data->GetPosition(x, y);
 		b2Vec2 point = { (float)x, (float)y };
 		if (up == false)
