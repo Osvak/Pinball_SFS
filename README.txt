@@ -5,9 +5,9 @@
 
   TEAM MEMBERS:
 
-	- Himar Bravo González
-	- Òscar Canales Villar
-	- Carles Garriga de la Mota
+	- Himar Bravo González (https://github.com/himar33)
+	- Òscar Canales Villar (https://github.com/Osvak)
+	- Carles Garriga de la Mota (https://github.com/FireAlfa)
 
   CONTROLS:
 
