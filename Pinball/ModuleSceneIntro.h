@@ -79,11 +79,16 @@ public:
 	PhysBody* skyAreaCollider; // Outside of wall
 	PhysBody* startTunnelCollider; // Inside of wall
 
-	// Sky Wall cotnrol
+	// Sky Wall control
 	bool skyWallFlag = true;
 	PhysBody* skyWall;
-	PhysBody* skyWallBottomCollider;
+	PhysBody* lobbyAreaCollider;
+	PhysBody* lobbyAreaCollider2;
 
+	// Lobby Wall control
+	bool lobbyWallFlag = true;
+	PhysBody* lobbyWall;
+	PhysBody* hotelAreaCollider;
 
 	SDL_Texture* circle;
 	SDL_Texture* bg;

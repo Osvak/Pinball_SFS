@@ -57,7 +57,7 @@ bool ModuleSceneIntro::Start()
 
 	// Colliders' shapes creation
 	{
-		int walls[154] = {
+		int walls[158] = {
 			437, 832,
 			468, 832,
 			468, 131,
@@ -118,7 +118,9 @@ bool ModuleSceneIntro::Start()
 			355, 389,
 			344, 393,
 			334, 404,
-			323, 415,
+			329, 412,
+			329, 490,
+			324, 490,
 			323, 380,
 			332, 375,
 			369, 366,
@@ -135,10 +137,10 @@ bool ModuleSceneIntro::Start()
 			423, 133,
 			429, 129,
 			437, 134
-		}; App->physics->CreateChain(0, 0, walls, 154, b2_staticBody);
+		}; App->physics->CreateChain(0, 0, walls, 158, b2_staticBody);
 		// Pivot 0, 0
 		int wall1[20] = {
-			257, 441,
+			258, 444,
 			228, 429,
 			220, 421,
 			213, 415,
@@ -318,7 +320,6 @@ bool ModuleSceneIntro::Start()
 			442, 104,
 			445, 89,
 		}; startWall = App->physics->CreateChain(0, 0, entranceWall, 20, b2_staticBody);
-
 		int skyWallPath[12] = {
 			305, 154,
 			305, 163,
@@ -327,6 +328,16 @@ bool ModuleSceneIntro::Start()
 			391, 206,
 			305, 163,
 		}; skyWall = App->physics->CreateChain(0, 0, skyWallPath, 12, b2_staticBody);
+		int lobbyWallPath[16] = {
+			258, 443,
+			285, 451,
+			307, 462,
+			318, 474,
+			324, 490,
+			318, 474,
+			307, 462,
+			285, 451,
+		}; lobbyWall = App->physics->CreateChain(0, 0, lobbyWallPath, 16, b2_staticBody);
 
 		// Pivot 0, 0
 		int longTube[44] = {
@@ -355,7 +366,6 @@ bool ModuleSceneIntro::Start()
 		}; lt = App->physics->CreateChain(0, 0, longTube, 44, b2_staticBody);
 		lt->body->SetActive(false);
 		// Pivot 0, 0
-
 	}
 
 	dead = App->physics->CreateRectangleSensor(245, 950, 481, 2);
@@ -389,7 +399,11 @@ bool ModuleSceneIntro::Start()
 	skyAreaCollider = App->physics->CreateRectangleSensor(367, 113, 80, 10);
 
 	// SKY Wall Colliders
-	skyWallBottomCollider = App->physics->CreateRectangleSensor(365, 220, 80, 4);
+	lobbyAreaCollider = App->physics->CreateRectangleSensor(365, 220, 80, 4);
+
+	// Lobby Wall Colliders
+	lobbyAreaCollider2 = App->physics->CreateRectangleSensor(290, 432, 50, 4);
+	hotelAreaCollider = App->physics->CreateRectangleSensor(291, 493, 60, 4);
 
 	createBall = true;
 	up = false;
@@ -527,7 +541,7 @@ update_status ModuleSceneIntro::Update()
 		}
 	}
 
-	// Starting Tunnel in & out control
+	// Starting Tunnel Wall Control
 	if (startTunnel == true)
 	{
 		startWall->body->SetActive(true);
@@ -545,6 +559,16 @@ update_status ModuleSceneIntro::Update()
 	else
 	{
 		skyWall->body->SetActive(false);
+	}
+
+	// Lobby Wall Control
+	if (lobbyWallFlag == true)
+	{
+		lobbyWall->body->SetActive(true);
+	}
+	else
+	{
+		lobbyWall->body->SetActive(false);
 	}
 
 	// BAR buttons texture draw
@@ -856,9 +880,15 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		skyWallFlag = false;
 	}
 
-	if (bodyA->body == skyWallBottomCollider->body || bodyB->body == skyWallBottomCollider->body)
+	if (bodyA->body == lobbyAreaCollider->body || bodyB->body == lobbyAreaCollider->body || bodyA->body == lobbyAreaCollider2->body || bodyB->body == lobbyAreaCollider2->body)
 	{
 		skyWallFlag = true;
+		lobbyWallFlag = false;
+	}
+
+	if (bodyA->body == hotelAreaCollider->body || bodyB->body == hotelAreaCollider->body)
+	{
+		lobbyWallFlag = true;
 	}
 
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)
