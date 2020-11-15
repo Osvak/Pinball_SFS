@@ -37,6 +37,7 @@ bool ModuleSceneIntro::Start()
 	song = App->audio->LoadFx("pinball/song.wav");
 	barSound = App->audio->LoadFx("pinball/barSound.wav");
 	looseSound = App->audio->LoadFx("pinball/loose.wav");
+	kickSound = App->audio->LoadFx("pinball/kick.wav");
 
 	// Textures Load
 	circle = App->textures->Load("pinball/ball.png"); 
@@ -353,9 +354,14 @@ bool ModuleSceneIntro::Start()
 	pointR = App->physics->CreateRectangleSensor(290, 465, 15, 10);
 	pointCopa = App->physics->CreateRectangleSensor(106, 728, 10, 10);
 
-	redStar1 = App->physics->CreateRectangleSensor(81, 547, 15, 10);
-	redStar2 = App->physics->CreateRectangleSensor(90, 579, 15, 10);
-	redStar3 = App->physics->CreateRectangleSensor(103, 608, 15, 10);
+	redStar1 = App->physics->CreateRectangleSensor(86, 547, 15, 10);
+	redStar2 = App->physics->CreateRectangleSensor(95, 579, 15, 10);
+	redStar3 = App->physics->CreateRectangleSensor(108, 608, 15, 10);
+
+	whiteStar1 = App->physics->CreateRectangleSensor(354, 568, 15, 10);
+	whiteStar2 = App->physics->CreateRectangleSensor(346, 597, 15, 10);
+	whiteStar3 = App->physics->CreateRectangleSensor(337, 628, 15, 10);
+	whiteStar4 = App->physics->CreateRectangleSensor(329, 659, 15, 10);
 
 	bumper1 = App->physics->CreateCircle(139, 190, 22, b2_staticBody);
 	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody);
@@ -613,15 +619,32 @@ update_status ModuleSceneIntro::Update()
 
 	if (touchingStar1 == true)
 	{
-		App->renderer->Blit(starsTex, 81, 547, &redRect, 1.0f);
+		App->renderer->Blit(starsTex, 88, 531, &redRect, 1.0f);
 	}
 	if (touchingStar2 == true)
 	{
-		App->renderer->Blit(starsTex, 90, 579, &redRect, 1.0f);
+		App->renderer->Blit(starsTex, 99, 561, &redRect, 1.0f);
 	}
 	if (touchingStar3 == true)
 	{
-		App->renderer->Blit(starsTex, 103, 608, &redRect, 1.0f);
+		App->renderer->Blit(starsTex, 110, 591, &redRect, 1.0f);
+	}
+
+	if (touchingWhiteStar1 == true)
+	{
+		App->renderer->Blit(starsTex, 320, 550, &whiteRect, 1.0f);
+	}
+	if (touchingWhiteStar2 == true)
+	{
+		App->renderer->Blit(starsTex, 310, 580, &whiteRect, 1.0f);
+	}
+	if (touchingWhiteStar3 == true)
+	{
+		App->renderer->Blit(starsTex, 300, 610, &whiteRect, 1.0f);
+	}
+	if (touchingWhiteStar4 == true)
+	{
+		App->renderer->Blit(starsTex, 290, 640, &whiteRect, 1.0f);
 	}
 
 	p2List_item<PhysBody*>* c = circles.getFirst();
@@ -800,7 +823,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 
 	if (bodyA->body == redStar1->body || bodyB->body == redStar1->body)
 	{
-		App->audio->PlayFx(bumperSound);
+		App->audio->PlayFx(kickSound);
 		touchingStar1 = true;
 		currentScore += 20 * multi;
 	}
@@ -808,10 +831,9 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		touchingStar1 = false;
 	}
-
 	if (bodyA->body == redStar2->body || bodyB->body == redStar2->body)
 	{
-		App->audio->PlayFx(bumperSound);
+		App->audio->PlayFx(kickSound);
 		touchingStar2 = true;
 		currentScore += 20 * multi;
 	}
@@ -819,16 +841,56 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		touchingStar2 = false;
 	}
-
 	if (bodyA->body == redStar3->body || bodyB->body == redStar3->body)
 	{
-		App->audio->PlayFx(bumperSound);
+		App->audio->PlayFx(kickSound);
 		touchingStar3 = true;
 		currentScore += 20 * multi;
 	}
 	else
 	{
 		touchingStar3 = false;
+	}
+
+	if (bodyA->body == whiteStar1->body || bodyB->body == whiteStar1->body)
+	{
+		App->audio->PlayFx(kickSound);
+		touchingWhiteStar1 = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		touchingWhiteStar1 = false;
+	}
+	if (bodyA->body == whiteStar2->body || bodyB->body == whiteStar2->body)
+	{
+		App->audio->PlayFx(kickSound);
+		touchingWhiteStar2 = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		touchingWhiteStar2 = false;
+	}
+	if (bodyA->body == whiteStar3->body || bodyB->body == whiteStar3->body)
+	{
+		App->audio->PlayFx(kickSound);
+		touchingWhiteStar3 = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		touchingWhiteStar3 = false;
+	}
+	if (bodyA->body == whiteStar4->body || bodyB->body == whiteStar4->body)
+	{
+		App->audio->PlayFx(kickSound);
+		touchingWhiteStar4 = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		touchingWhiteStar4 = false;
 	}
 
 	if (bodyA->body == pointY->body || bodyB->body == pointY->body)
@@ -884,10 +946,10 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		if (copaCond != true)
 		{
-			App->audio->PlayFx(barSound);
-			copaCond = true;
 			if (bCond == true && aCond == true && rCond == true)
 			{
+				App->audio->PlayFx(barSound);
+				copaCond = true;
 				secondCreateBall = true;
 			}
 		}

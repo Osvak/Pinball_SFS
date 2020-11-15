@@ -48,18 +48,30 @@ public:
 	PhysBody* redStar2;
 	PhysBody* redStar3;
 
+	PhysBody* whiteStar1;
+	PhysBody* whiteStar2;
+	PhysBody* whiteStar3;
+	PhysBody* whiteStar4;
+
 	bool createBall;
 	bool secondCreateBall;
 	int ballsCount = 0;
 	bool secondballisalive;
 	bool sensed;
 	bool up;
+
 	bool touchingBumper1 = false;
 	bool touchingBumper2 = false;
 	bool touchingBumper3 = false;
+
 	bool touchingStar1 = false;
 	bool touchingStar2 = false;
 	bool touchingStar3 = false;
+
+	bool touchingWhiteStar1 = false;
+	bool touchingWhiteStar2 = false;
+	bool touchingWhiteStar3 = false;
+	bool touchingWhiteStar4 = false;
 
 	SDL_Texture* circle;
 	SDL_Texture* bg;
@@ -113,6 +125,7 @@ public:
 	uint song;
 	uint barSound;
 	uint looseSound;
+	uint kickSound;
 
 	p2Point<int> ray;
 	bool ray_on;
