@@ -44,15 +44,22 @@ public:
 	PhysBody* pointR;
 	PhysBody* pointCopa;
 
+	PhysBody* redStar1;
+	PhysBody* redStar2;
+	PhysBody* redStar3;
+
 	bool createBall;
 	bool secondCreateBall;
 	int ballsCount = 0;
 	bool secondballisalive;
 	bool sensed;
 	bool up;
-	bool touching1 = false;
-	bool touching2 = false;
-	bool touching3 = false;
+	bool touchingBumper1 = false;
+	bool touchingBumper2 = false;
+	bool touchingBumper3 = false;
+	bool touchingStar1 = false;
+	bool touchingStar2 = false;
+	bool touchingStar3 = false;
 
 	SDL_Texture* circle;
 	SDL_Texture* bg;
@@ -89,6 +96,11 @@ public:
 	SDL_Rect rRect = { 62,0,31,30 };
 	bool rCond = false;
 
+	SDL_Texture* starsTex;
+	SDL_Rect whiteRect = { 0,0,31,30 };
+	SDL_Rect shadowWhiteRect = { 31,0,31,30 };
+	SDL_Rect redRect = { 62,0,31,30 };
+
 	SDL_Texture* leftFlipperTex;
 	SDL_Texture* rightFlipperTex;
 
@@ -100,6 +112,7 @@ public:
 	uint multiSound;
 	uint song;
 	uint barSound;
+	uint looseSound;
 
 	p2Point<int> ray;
 	bool ray_on;

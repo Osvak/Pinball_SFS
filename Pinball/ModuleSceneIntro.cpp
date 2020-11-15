@@ -36,6 +36,7 @@ bool ModuleSceneIntro::Start()
 	multiSound = App->audio->LoadFx("pinball/multi.wav");
 	song = App->audio->LoadFx("pinball/song.wav");
 	barSound = App->audio->LoadFx("pinball/barSound.wav");
+	looseSound = App->audio->LoadFx("pinball/loose.wav");
 
 	// Textures Load
 	circle = App->textures->Load("pinball/ball.png"); 
@@ -51,6 +52,7 @@ bool ModuleSceneIntro::Start()
 	barTex = App->textures->Load("pinball/bar.png");
 	copaTex = App->textures->Load("pinball/copa.png");
 	shootTex = App->textures->Load("pinball/shoot.png");
+	starsTex = App->textures->Load("pinball/stars.png");
 
 	// Colliders' shapes creation
 	int walls[154] = {
@@ -180,6 +182,27 @@ bool ModuleSceneIntro::Start()
 		153, 313,
 		167, 318
 	}; App->physics->CreateChain(0, 0, wall2, 66, b2_staticBody);
+
+	// Pivot 0, 0
+	int wall3[34] = {
+		115, 172,
+		106, 172,
+		107, 165,
+		117, 154,
+		134, 141,
+		168, 140,
+		186, 132,
+		235, 132,
+		244, 138,
+		258, 150,
+		258, 165,
+		251, 167,
+		185, 167,
+		161, 162,
+		144, 160,
+		132, 160,
+		122, 166
+	}; App->physics->CreateChain(0, 0, wall3, 34, b2_staticBody);
 
 	int leftGround[28] = {
 		84, 879,
@@ -330,6 +353,10 @@ bool ModuleSceneIntro::Start()
 	pointR = App->physics->CreateRectangleSensor(290, 465, 15, 10);
 	pointCopa = App->physics->CreateRectangleSensor(106, 728, 10, 10);
 
+	redStar1 = App->physics->CreateRectangleSensor(81, 547, 15, 10);
+	redStar2 = App->physics->CreateRectangleSensor(90, 579, 15, 10);
+	redStar3 = App->physics->CreateRectangleSensor(103, 608, 15, 10);
+
 	bumper1 = App->physics->CreateCircle(139, 190, 22, b2_staticBody);
 	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody);
 	bumper3 = App->physics->CreateCircle(190, 250, 22, b2_staticBody);
@@ -360,6 +387,7 @@ update_status ModuleSceneIntro::Update()
 	// Keep track of lifes and score
 	if (lifes == 0)
 	{
+		App->audio->PlayFx(looseSound);
 		previousScore = currentScore;
 		for (int i = 0; i < MAX_SCORES; i++)
 		{
@@ -536,7 +564,7 @@ update_status ModuleSceneIntro::Update()
 	// Bumpers drawing
 	SDL_Rect noTouching = { 0, 0, 56, 53 };
 	SDL_Rect Touching = { 56, 0, 56, 53 };
-	if (touching1 == true)
+	if (touchingBumper1 == true)
 	{
 		bumper1->GetPosition(x, y);
 		App->renderer->Blit(bumperTex, x - 5, y - 3, &Touching, 1.0f);
@@ -547,7 +575,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(bumperTex, x - 5, y - 3, &noTouching, 1.0f);
 	}
 
-	if (touching2 == true)
+	if (touchingBumper2 == true)
 	{
 		bumper2->GetPosition(x, y);
 		App->renderer->Blit(bumperTex, x - 5, y - 3, &Touching, 1.0f);
@@ -558,7 +586,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(bumperTex, x - 5, y - 3, &noTouching, 1.0f);
 	}
 
-	if (touching3 == true)
+	if (touchingBumper3 == true)
 	{
 		bumper3->GetPosition(x, y);
 		App->renderer->Blit(bumperTex, x - 5, y - 3, &Touching, 1.0f);
@@ -581,6 +609,19 @@ update_status ModuleSceneIntro::Update()
 	if (yCond == true)
 	{
 		App->renderer->Blit(skyTex, 394, 104, &yRect, 1.0f);
+	}
+
+	if (touchingStar1 == true)
+	{
+		App->renderer->Blit(starsTex, 81, 547, &redRect, 1.0f);
+	}
+	if (touchingStar2 == true)
+	{
+		App->renderer->Blit(starsTex, 90, 579, &redRect, 1.0f);
+	}
+	if (touchingStar3 == true)
+	{
+		App->renderer->Blit(starsTex, 103, 608, &redRect, 1.0f);
 	}
 
 	p2List_item<PhysBody*>* c = circles.getFirst();
@@ -719,15 +760,6 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}*/
 	}
 
-	if (bodyA->body == leftBumper->body || bodyB->body == leftBumper->body)
-	{
-		int x, y;
-		b2Vec2 force = { 0.5f, -0.5f };
-		circles.getFirst()->data->GetPosition(x, y);
-		b2Vec2 point = { (float)x, (float)y };
-		circles.getFirst()->data->body->ApplyForce(force, point, true);
-	}
-
 	if (bodyA->body == startPoint->body || bodyB->body == startPoint->body)
 	{
 		start = true;
@@ -736,34 +768,67 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)
 	{
 		App->audio->PlayFx(bumperSound);
-		touching1 = true;
+		touchingBumper1 = true;
 		currentScore += 100*multi;
 	}
 	else
 	{
-		touching1 = false;
+		touchingBumper1 = false;
 	}
 
 	if (bodyA->body == bumper2->body || bodyB->body == bumper2->body)
 	{
 		App->audio->PlayFx(bumperSound);
-		touching2 = true;
+		touchingBumper2 = true;
 		currentScore += 100*multi;
 	}
 	else
 	{
-		touching2 = false;
+		touchingBumper2 = false;
 	}
 
 	if (bodyA->body == bumper3->body || bodyB->body == bumper3->body)
 	{
 		App->audio->PlayFx(bumperSound);
-		touching3 = true;
+		touchingBumper3 = true;
 		currentScore += 100*multi;
 	}
 	else
 	{
-		touching3 = false;
+		touchingBumper3 = false;
+	}
+
+	if (bodyA->body == redStar1->body || bodyB->body == redStar1->body)
+	{
+		App->audio->PlayFx(bumperSound);
+		touchingStar1 = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		touchingStar1 = false;
+	}
+
+	if (bodyA->body == redStar2->body || bodyB->body == redStar2->body)
+	{
+		App->audio->PlayFx(bumperSound);
+		touchingStar2 = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		touchingStar2 = false;
+	}
+
+	if (bodyA->body == redStar3->body || bodyB->body == redStar3->body)
+	{
+		App->audio->PlayFx(bumperSound);
+		touchingStar3 = true;
+		currentScore += 20 * multi;
+	}
+	else
+	{
+		touchingStar3 = false;
 	}
 
 	if (bodyA->body == pointY->body || bodyB->body == pointY->body)
