@@ -714,6 +714,12 @@ update_status ModuleSceneIntro::Update()
 			start = false;
 		}
 		sc->data->body->SetFixedRotation(false);
+
+		//Ball 2 to mouse debug
+
+		if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
+			sc->data->body->SetTransform(b2Vec2(PIXEL_TO_METERS(App->input->GetMouseX()), PIXEL_TO_METERS(App->input->GetMouseY())), 0);
+		}
 	}
 
 	// First circle logic
@@ -736,7 +742,7 @@ update_status ModuleSceneIntro::Update()
 		}
 		c->data->body->SetFixedRotation(false);
 
-		//Ball to mouse debug
+		//Ball 1 to mouse debug
 
 		if (App->input->GetKey(SDL_SCANCODE_X) == KEY_DOWN) {
 			c->data->body->SetTransform(b2Vec2(PIXEL_TO_METERS(App->input->GetMouseX()), PIXEL_TO_METERS(App->input->GetMouseY())), 0);
