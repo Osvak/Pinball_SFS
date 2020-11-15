@@ -388,7 +388,7 @@ update_status ModuleSceneIntro::Update()
 	if (secondCreateBall == true)
 	{
 		ballsCount += 1;
-		secondCircles.add(App->physics->CreateCircle(353, 68, 12));
+		secondCircles.add(App->physics->CreateCircle(441, 802, 12));
 		secondCircles.getLast()->data->listener = this;
 		secondballisalive = true;
 		secondCreateBall = false;
@@ -573,31 +573,33 @@ update_status ModuleSceneIntro::Update()
 
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
-	x, y;
-	b2Vec2 force = { 0.f, -2.f };
-	c->data->GetPosition(x, y);0
-	b2Vec2 point = { (float)x, (float)y };
-	if (up == false)
-	{
-		//2ND LAYER
-		App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, c->data->GetRotation());
-	}
-	if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) && start == true)
-	{
-		App->audio->PlayFx(kickerSound);
-		c->data->body->SetFixedRotation(true);
-		c->data->body->ApplyLinearImpulse(force, point, true);
-		start = false;
-	}
-	c->data->body->SetFixedRotation(false);
-
 	if (secondballisalive == true)
 	{
-		c = secondCircles.getFirst();
-		x, y;
-		force = { 0.f, -2.f };
+		p2List_item<PhysBody*>* sc = secondCircles.getFirst();
+		sc = secondCircles.getFirst();
+		b2Vec2 force = { 0.f, -2.f };
+		sc->data->GetPosition(x, y);
+		b2Vec2 point = { (float)x, (float)y };
+		if (up == false)
+		{
+			//2ND LAYER
+			App->renderer->Blit(circle, x - 6, y - 6, NULL, 1.0f, sc->data->GetRotation());
+		}
+		if ((App->input->GetKey(SDL_SCANCODE_DOWN) == KEY_DOWN) && start == true)
+		{
+			App->audio->PlayFx(kickerSound);
+			sc->data->body->SetFixedRotation(true);
+			sc->data->body->ApplyLinearImpulse(force, point, true);
+			start = false;
+		}
+		sc->data->body->SetFixedRotation(false);
+	}
+
+	if (c != NULL)
+	{
+		b2Vec2 force = { 0.f, -2.f };
 		c->data->GetPosition(x, y);
-		point = { (float)x, (float)y };
+		b2Vec2 point = { (float)x, (float)y };
 		if (up == false)
 		{
 			//2ND LAYER
@@ -662,20 +664,25 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	//CreateBall();
 	if(bodyA->body == dead->body || bodyB->body == dead->body)
 	{
-		if (bodyA->body == circles.getFirst()->data->body || bodyB->body == circles.getFirst()->data->body)
+		if (circles.getFirst() != NULL)
 		{
-			App->audio->PlayFx(deathSound);
-			circles.clear();
+			if (bodyA->body == circles.getFirst()->data->body || bodyB->body == circles.getFirst()->data->body)
+			{
+				App->audio->PlayFx(deathSound);
+				circles.clear();
+				ballsCount -= 1;
+			}
 		}
-		/*if (secondCircles.getFirst()->data->body != NULL)
+		if (secondCircles.getFirst() != NULL)
 		{
 			if ((bodyA->body == secondCircles.getFirst()->data->body || bodyB->body == secondCircles.getFirst()->data->body) && secondballisalive == true)
 			{
 				App->audio->PlayFx(deathSound);
 				secondCircles.clear();
 				secondballisalive = false;
+				ballsCount -= 1;
 			}
-		}*/
+		}
 	}
 
 	if (bodyA->body == layer1->body || bodyB->body == layer1->body)
@@ -773,7 +780,6 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		{
 			App->audio->PlayFx(barSound);
 			bCond = true;
-			secondCreateBall = true;
 		}
 	}
 	if (bodyA->body == pointA->body || bodyB->body == pointA->body)
@@ -796,7 +802,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		if (copaCond != true)
 		{
-			//App->audio->PlayFx(barSound);
+			App->audio->PlayFx(barSound);
 			copaCond = true;
 			secondCreateBall = true;
 		}
