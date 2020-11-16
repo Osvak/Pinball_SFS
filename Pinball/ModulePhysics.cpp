@@ -128,7 +128,7 @@ update_status ModulePhysics::PreUpdate()
 	return UPDATE_CONTINUE;
 }
 
-PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type)
+PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type, float restitution)
 {
 	b2BodyDef body;
 	body.bullet = true;
@@ -141,6 +141,7 @@ PhysBody* ModulePhysics::CreateCircle(int x, int y, int radius, b2BodyType type)
 	shape.m_radius = PIXEL_TO_METERS(radius);
 
 	b2FixtureDef fixture;
+	fixture.restitution = restitution;
 	fixture.shape = &shape;
 	fixture.density = 1.0f;
 
@@ -207,7 +208,7 @@ PhysBody* ModulePhysics::CreateRectangleSensor(int x, int y, int width, int heig
 	return pbody;
 }
 
-PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2BodyType type, float density)
+PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2BodyType type, float density, float restitution)
 {
 	b2BodyDef body;
 	body.type = type;
@@ -227,6 +228,7 @@ PhysBody* ModulePhysics::CreateChain(int x, int y, int* points, int size, b2Body
 	shape.CreateLoop(p, size / 2);
 
 	b2FixtureDef fixture;
+	fixture.restitution = restitution;
 	fixture.shape = &shape;
 	fixture.density = density;
 

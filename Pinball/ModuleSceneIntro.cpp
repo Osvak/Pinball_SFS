@@ -265,7 +265,7 @@ bool ModuleSceneIntro::Start()
 			153, 770,
 			153, 783,
 			148, 783
-		}; leftBumper = App->physics->CreateChain(0, 0, leftBumperPoints, 12, b2_staticBody);
+		}; leftBumper = App->physics->CreateChain(0, 0, leftBumperPoints, 12, b2_staticBody, 0.0f, 1.0f);
 		int rightBumperPoints[12] = {
 			320, 782,
 			328, 782,
@@ -273,7 +273,7 @@ bool ModuleSceneIntro::Start()
 			352, 727,
 			347, 723,
 			320, 772
-		}; rightBumper = App->physics->CreateChain(0, 0, rightBumperPoints, 12, b2_staticBody);
+		}; rightBumper = App->physics->CreateChain(0, 0, rightBumperPoints, 12, b2_staticBody, 0.0f, 1.0f);
 
 		int leftTube[26] = {
 			74, 546,
@@ -496,9 +496,9 @@ bool ModuleSceneIntro::Start()
 	whiteStar3 = App->physics->CreateRectangleSensor(337, 628, 15, 10);
 	whiteStar4 = App->physics->CreateRectangleSensor(329, 659, 15, 10);
 
-	bumper1 = App->physics->CreateCircle(139, 190, 22, b2_staticBody);
-	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody);
-	bumper3 = App->physics->CreateCircle(190, 250, 22, b2_staticBody);
+	bumper1 = App->physics->CreateCircle(139, 190, 22, b2_staticBody, 1.0f);
+	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody, 1.0f);
+	bumper3 = App->physics->CreateCircle(190, 250, 22, b2_staticBody, 1.0f);
 
 	// Start Wall Colliders
 	startTunnelCollider = App->physics->CreateRectangleSensor(450, 120, 10, 10);
