@@ -514,7 +514,7 @@ bool ModuleSceneIntro::Start()
 	// Right Ramp Colliders
 	rightRampInCollider = App->physics->CreateRectangleSensor(378, 456, 10, 10);
 	rightRampOutCollider = App->physics->CreateRectangleSensor(397, 563, 10, 10);
-	rightRampOutCollider2 = App->physics->CreateRectangleSensor(373, 505, 10, 10);
+	rightRampOutCollider2 = App->physics->CreateRectangleSensor(373, 480, 5, 5);
 
 	// Left Ramp Colliders
 	leftRampInCollider = App->physics->CreateRectangleSensor(65, 459, 10, 10);
@@ -1108,7 +1108,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 	{
 		rightRampFlag = true;
 	}
-	if (bodyA->body == rightRampOutCollider->body || bodyB->body == rightRampOutCollider->body)
+	if (bodyA->body == rightRampOutCollider->body || bodyB->body == rightRampOutCollider->body || bodyA->body == rightRampOutCollider2->body || bodyB->body == rightRampOutCollider2->body)
 	{
 		rightRampFlag = false;
 	}
