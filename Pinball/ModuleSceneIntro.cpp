@@ -38,6 +38,7 @@ bool ModuleSceneIntro::Start()
 	barSound = App->audio->LoadFx("pinball/barSound.wav");
 	looseSound = App->audio->LoadFx("pinball/loose.wav");
 	kickSound = App->audio->LoadFx("pinball/kick.wav");
+	bonusSound = App->audio->LoadFx("pinball/bonus.wav");
 
 	// Textures Load
 	circle = App->textures->Load("pinball/ball.png"); 
@@ -531,7 +532,7 @@ bool ModuleSceneIntro::Start()
 	up = false;
 	start = true;
 
-	App->audio->PlayFx(song, -1);
+	//App->audio->PlayFx(song, -1);
 
 	return ret;
 }
@@ -601,10 +602,23 @@ update_status ModuleSceneIntro::Update()
 		sCond = false;
 		kCond = false;
 		yCond = false;
+
 		bCond = false;
 		aCond = false;
 		rCond = false;
 		copaCond = false;
+
+		lobbyLFlag = false;
+		lobbyOFlag = false;
+		lobbyBFlag = false;
+		lobbyB2Flag = false;
+		lobbyYFlag = false;
+		lobbyLPressed = false;
+		lobbyOPressed = false;
+		lobbyBPressed = false;
+		lobbyB2Pressed = false;
+		lobbyYPressed = false;
+		
 		circles.add(App->physics->CreateCircle(441, 802, 12));
 		circles.getLast()->data->listener = this;
 		createBall = false;
@@ -871,6 +885,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(skyTex, 394, 104, &yRect, 1.0f);
 	}
 
+	// Red stars draw
 	if (touchingStar1 == true)
 	{
 		App->renderer->Blit(starsTex, 88, 531, &redRect, 1.0f);
@@ -884,6 +899,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(starsTex, 110, 591, &redRect, 1.0f);
 	}
 
+	// White stars right draw
 	if (touchingWhiteStar1 == true)
 	{
 		App->renderer->Blit(starsTex, 320, 550, &whiteRect, 1.0f);
@@ -901,6 +917,7 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(starsTex, 290, 640, &whiteRect, 1.0f);
 	}
 
+	// Lobby buttons draw
 	if (lobbyLFlag == true)
 	{
 		App->renderer->Blit(lobbyTex, 205, 182, &lobbyLRect, 1.0f);
@@ -922,6 +939,25 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(lobbyTex, 350, 219, &lobbyYRect, 1.0f);
 	}
 
+	// If all the lobby buttons are pressed, get bonus score and reset buttons
+	if (lobbyLFlag == true && lobbyOFlag == true && lobbyBFlag == true && lobbyB2Flag == true && lobbyYFlag == true)
+	{
+		lobbyLFlag = false;
+		lobbyOFlag = false;
+		lobbyBFlag = false;
+		lobbyB2Flag = false;
+		lobbyYFlag = false;
+		lobbyLPressed = false;
+		lobbyOPressed = false;
+		lobbyBPressed = false;
+		lobbyB2Pressed = false;
+		lobbyYPressed = false;
+
+		currentScore += 100 * multi;
+
+		App->audio->PlayFx(bonusSound);
+	}
+
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	// 3RD LAYER
@@ -935,7 +971,7 @@ update_status ModuleSceneIntro::Update()
 	{
 		p2List_item<PhysBody*>* sc = secondCircles.getFirst();
 		sc = secondCircles.getFirst();
-		b2Vec2 force = { 0.f, -2.05f };
+		b2Vec2 force = { 0.f, -2.15f };
 		sc->data->GetPosition(x, y);
 		b2Vec2 point = { (float)x, (float)y };
 		if (up == false)
@@ -962,7 +998,7 @@ update_status ModuleSceneIntro::Update()
 	// First circle logic
 	if (c != NULL)
 	{
-		b2Vec2 force = { 0.f, -2.05f };
+		b2Vec2 force = { 0.f, -2.10f };
 		c->data->GetPosition(x, y);
 		b2Vec2 point = { (float)x, (float)y };
 		if (up == false)
@@ -1133,7 +1169,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		middleRampFlag = false;
 	}
 
-
+	// Bumpers collisions
 	if (bodyA->body == bumper1->body || bodyB->body == bumper1->body)
 	{
 		App->audio->PlayFx(bumperSound);
@@ -1167,6 +1203,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		touchingBumper3 = false;
 	}
 
+	// Red stars collisions
 	if (bodyA->body == redStar1->body || bodyB->body == redStar1->body)
 	{
 		App->audio->PlayFx(kickSound);
@@ -1198,6 +1235,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		touchingStar3 = false;
 	}
 
+	// White stars right collisions
 	if (bodyA->body == whiteStar1->body || bodyB->body == whiteStar1->body)
 	{
 		App->audio->PlayFx(kickSound);
@@ -1239,57 +1277,44 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		touchingWhiteStar4 = false;
 	}
 
-	if (bodyA->body == lobbyL->body || bodyB->body == lobbyL->body)
+	// Lobby buttons collisions
+	if ((bodyA->body == lobbyL->body || bodyB->body == lobbyL->body) && lobbyLPressed == false)
 	{
 		App->audio->PlayFx(kickSound);
+		currentScore += 20 * multi;
 		lobbyLFlag = true;
-		currentScore += 20 * multi;
+		lobbyLPressed = true;
 	}
-	else
-	{
-		lobbyLFlag = false;
-	}
-	if (bodyA->body == lobbyO->body || bodyB->body == lobbyO->body)
+	if ((bodyA->body == lobbyO->body || bodyB->body == lobbyO->body) && lobbyOPressed == false)
 	{
 		App->audio->PlayFx(kickSound);
+		currentScore += 20 * multi;
 		lobbyOFlag = true;
-		currentScore += 20 * multi;
+		lobbyOPressed = true;
 	}
-	else
-	{
-		lobbyOFlag = false;
-	}
-	if (bodyA->body == lobbyB->body || bodyB->body == lobbyB->body)
+	if ((bodyA->body == lobbyB->body || bodyB->body == lobbyB->body) && lobbyBPressed == false)
 	{
 		App->audio->PlayFx(kickSound);
+		currentScore += 20 * multi;
 		lobbyBFlag = true;
-		currentScore += 20 * multi;
+		lobbyBPressed = true;
 	}
-	else
-	{
-		lobbyBFlag = false;
-	}
-	if (bodyA->body == lobbyB2->body || bodyB->body == lobbyB2->body)
+	if ((bodyA->body == lobbyB2->body || bodyB->body == lobbyB2->body) && lobbyB2Pressed == false)
 	{
 		App->audio->PlayFx(kickSound);
+		currentScore += 20 * multi;
 		lobbyB2Flag = true;
-		currentScore += 20 * multi;
+		lobbyB2Pressed = true;
 	}
-	else
-	{
-		lobbyB2Flag = false;
-	}
-	if (bodyA->body == lobbyY->body || bodyB->body == lobbyY->body)
+	if ((bodyA->body == lobbyY->body || bodyB->body == lobbyY->body) && lobbyYPressed == false)
 	{
 		App->audio->PlayFx(kickSound);
-		lobbyYFlag = true;
 		currentScore += 20 * multi;
+		lobbyYFlag = true;
+		lobbyYPressed = true;
 	}
-	else
-	{
-		lobbyYFlag = false;
-	}
-
+	
+	// Sky buttons collisions
 	if (bodyA->body == pointY->body || bodyB->body == pointY->body)
 	{
 		if (yCond != true && multi < 10)
@@ -1315,6 +1340,7 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 		}
 	}
 
+	// Bar buttons collisions
 	if (bodyA->body == pointB->body || bodyB->body == pointB->body)
 	{
 		if (bCond != true)

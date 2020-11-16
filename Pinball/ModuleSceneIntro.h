@@ -126,11 +126,16 @@ public:
 	bool lobbyBFlag = false;
 	bool lobbyB2Flag = false;
 	bool lobbyYFlag = false;
+	bool lobbyLPressed = false;
+	bool lobbyOPressed = false;
+	bool lobbyBPressed = false;
+	bool lobbyB2Pressed = false;
+	bool lobbyYPressed = false;
 	SDL_Texture* lobbyTex;
 	SDL_Rect lobbyLRect = { 0,0,25,26 };
 	SDL_Rect lobbyORect = { 25,0,25,26 };
 	SDL_Rect lobbyBRect = { 50,0,25,26 };
-	SDL_Rect lobbyYRect = { 100,0,25,26 };
+	SDL_Rect lobbyYRect = { 75,0,25,26 };
 
 
 	// Textures
@@ -190,6 +195,7 @@ public:
 	uint barSound;
 	uint looseSound;
 	uint kickSound;
+	uint bonusSound;
 
 	p2Point<int> ray;
 	bool ray_on;
