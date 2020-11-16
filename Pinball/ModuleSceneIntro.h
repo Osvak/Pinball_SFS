@@ -236,8 +236,14 @@ public:
 	int currentScore = 0000;
 	int highestScore = 0000;
 	int scoreFont = -1;
-	char scoreText[10] = { "\0" };
-	char previousScoreText[10] = { "\0" };
-	char highestScoreText[10] = { "\0" };
-	char lifesText[10] = { "\0" };
+	char scoreNum[10] = { "\0" };
+	char previousScoreNum[10] = { "\0" };
+	char highestScoreNum[10] = { "\0" };
+	char lifesNum[10] = { "\0" };
+
+	int textFont = -1;
+	char currentScoreText[3] = { "\0" };
+	char previousScoreText[3] = { "\0" };
+	char highScoreText[3] = { "\0" };
+	char lifesText[2] = { "\0" };
 };

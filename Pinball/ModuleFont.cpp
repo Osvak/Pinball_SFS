@@ -19,9 +19,11 @@ ModuleFonts::~ModuleFonts()
 bool ModuleFonts::Start()
 {
 
-	char score_Table[] = { "0123456789" };
-	App->scene_intro->scoreFont = App->fonts->Load("pinball/font.png", score_Table, 1);
+	char scoreTable[] = { "0123456789" };
+	App->scene_intro->scoreFont = App->fonts->Load("pinball/font.png", scoreTable, 1);
 
+	char textTable[] = { "ABCDEFGHIJKLMNOPQRSTUVWXYZ" };
+	App->scene_intro->textFont = App->fonts->Load("pinball/textFont.png", textTable, 2);
 
 	return true;
 }

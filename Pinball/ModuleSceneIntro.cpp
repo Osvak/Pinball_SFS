@@ -1119,14 +1119,23 @@ update_status ModuleSceneIntro::Update()
 
 
 	// Scores Text
-	sprintf_s(scoreText, 10, "%d", currentScore);
-	sprintf_s(previousScoreText, 10, "%d", previousScore);
-	sprintf_s(highestScoreText, 10, "%d", highestScore);
-	sprintf_s(lifesText, 10, "%d", lifes);
-	App->fonts->BlitText(10, 10, scoreFont, scoreText);
-	App->fonts->BlitText(10, 40, scoreFont, previousScoreText);
-	App->fonts->BlitText(10, 70, scoreFont, highestScoreText);
-	App->fonts->BlitText(10, 100, scoreFont, lifesText);
+	sprintf_s(scoreNum, 10, "%d", currentScore);
+	sprintf_s(previousScoreNum, 10, "%d", previousScore);
+	sprintf_s(highestScoreNum, 10, "%d", highestScore);
+	sprintf_s(lifesNum, 10, "%d", lifes);
+	App->fonts->BlitText(70, 10, scoreFont, scoreNum);
+	App->fonts->BlitText(70, 40, scoreFont, previousScoreNum);
+	App->fonts->BlitText(70, 70, scoreFont, highestScoreNum);
+	App->fonts->BlitText(70, 100, scoreFont, lifesNum);
+
+	sprintf_s(currentScoreText, 3, "CS");
+	sprintf_s(previousScoreText, 3, "PS");
+	sprintf_s(highScoreText, 3, "HS");
+	sprintf_s(lifesText, 2, "L");
+	App->fonts->BlitText(8, 10, textFont, currentScoreText);
+	App->fonts->BlitText(8, 40, textFont, previousScoreText);
+	App->fonts->BlitText(8, 70, textFont, highScoreText);
+	App->fonts->BlitText(8, 100, textFont, lifesText);
 
 	return UPDATE_CONTINUE;
 }
