@@ -30,8 +30,10 @@
   
   BONUSES:
   
-  	- Multiplyer: If you complete the word SKY by passing through the 3 tunels a x2 multiplyer is aplied. 
-		      After completing SKY the letters will reset and the multiplayer can be activated again.
+  	- Multiplier: If you complete the word SKY by passing through the 3 tunels a x2 multiplier is aplied. 
+		      After completing SKY the letters will reset and the multiplier can be activated again.
+
+	- Letter activation: If you activate the white marks at each side of the flippers, the "K" letter from the SKY word will be activated. 
 	
 	- Extra Ball: When gathering up the letters B, A, R, in the middle of the screen, and passing through the glass icon, 
 		      an extra ball will be obtained. You can use the second ball by pressing the DOWN arrow.

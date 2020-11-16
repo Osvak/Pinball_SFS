@@ -56,6 +56,7 @@ bool ModuleSceneIntro::Start()
 	shootTex = App->textures->Load("pinball/shoot.png");
 	starsTex = App->textures->Load("pinball/stars.png");
 	lobbyTex = App->textures->Load("pinball/lobby.png");
+	whiteSidesTex = App->textures->Load("pinball/white_sides.png");
 
 	// Colliders' shapes creation
 	{
@@ -472,31 +473,36 @@ bool ModuleSceneIntro::Start()
 	dead = App->physics->CreateRectangleSensor(245, 950, 481, 2);
 	startPoint = App->physics->CreateRectangleSensor(450, 802, 15, 15);
 
-	// Lobby button
+	// Lobby buttons colliders
 	lobbyL = App->physics->CreateRectangleSensor(200, 178, 12, 5);
 	lobbyO = App->physics->CreateRectangleSensor(237, 178, 12, 5);
 	lobbyB = App->physics->CreateRectangleSensor(320, 180, 10, 5);
 	lobbyB2 = App->physics->CreateRectangleSensor(349, 193, 10, 5);
 	lobbyY = App->physics->CreateRectangleSensor(376, 207, 10, 5);
 
+	// SKY buttons colliders
 	pointS = App->physics->CreateRectangleSensor(325, 140, 15, 10);
 	pointK = App->physics->CreateRectangleSensor(368, 140, 15, 10);
 	pointY = App->physics->CreateRectangleSensor(410, 140, 15, 10);
 
+	// BAR buttons colliders
 	pointB = App->physics->CreateRectangleSensor(235, 433, 15, 10);
 	pointA = App->physics->CreateRectangleSensor(267, 450, 15, 10);
 	pointR = App->physics->CreateRectangleSensor(290, 465, 15, 10);
 	pointCopa = App->physics->CreateRectangleSensor(106, 728, 10, 10);
 
+	// red star buttons colliders
 	redStar1 = App->physics->CreateRectangleSensor(86, 547, 15, 10);
 	redStar2 = App->physics->CreateRectangleSensor(95, 579, 15, 10);
 	redStar3 = App->physics->CreateRectangleSensor(108, 608, 15, 10);
-
+	
+	// white star right buttons colliders
 	whiteStar1 = App->physics->CreateRectangleSensor(354, 568, 15, 10);
 	whiteStar2 = App->physics->CreateRectangleSensor(346, 597, 15, 10);
 	whiteStar3 = App->physics->CreateRectangleSensor(337, 628, 15, 10);
 	whiteStar4 = App->physics->CreateRectangleSensor(329, 659, 15, 10);
 
+	// bumpers colliders
 	bumper1 = App->physics->CreateCircle(139, 190, 22, b2_staticBody, 1.0f);
 	bumper2 = App->physics->CreateCircle(120, 247, 22, b2_staticBody, 1.0f);
 	bumper3 = App->physics->CreateCircle(190, 250, 22, b2_staticBody, 1.0f);
@@ -527,12 +533,16 @@ bool ModuleSceneIntro::Start()
 	middleRampOutCollider = App->physics->CreateRectangleSensor(297, 72, 10, 10);
 	middleRampOutCollider2 = App->physics->CreateRectangleSensor(192, 405, 10, 10);
 
+	// White Buttons Colliders
+	whiteButtonLeft = App->physics->CreateRectangleSensor(71, 733, 5, 5);
+	whiteButtonRight = App->physics->CreateRectangleSensor(365, 733, 5, 5);
+
 
 	createBall = true;
 	up = false;
 	start = true;
 
-	//App->audio->PlayFx(song, -1);
+	App->audio->PlayFx(song, -1);
 
 	return ret;
 }
@@ -597,8 +607,20 @@ update_status ModuleSceneIntro::Update()
 	// Creation of the first ball
 	if (createBall == true)
 	{
-		ballsCount += 1;
+		ballsCount += 1;		
+		circles.add(App->physics->CreateCircle(441, 802, 12));
+		circles.getLast()->data->listener = this;
+		createBall = false;
+	}
+
+	if (ballsCount == 0)
+	{
+		start = true;
+		createBall = true;
+		lifes -= 1;
 		multi = 1;
+
+		// Reset flags
 		sCond = false;
 		kCond = false;
 		yCond = false;
@@ -618,17 +640,9 @@ update_status ModuleSceneIntro::Update()
 		lobbyBPressed = false;
 		lobbyB2Pressed = false;
 		lobbyYPressed = false;
-		
-		circles.add(App->physics->CreateCircle(441, 802, 12));
-		circles.getLast()->data->listener = this;
-		createBall = false;
-	}
 
-	if (ballsCount == 0)
-	{
-		start = true;
-		createBall = true;
-		lifes -= 1;
+		whiteButtonLeftFlag = false;
+		whiteButtonRightFlag = false;
 	}
 
 	// Flippers sound
@@ -958,6 +972,27 @@ update_status ModuleSceneIntro::Update()
 		App->audio->PlayFx(bonusSound);
 	}
 
+	// White buttons draw
+	if (whiteButtonLeftFlag == true)
+	{
+		App->renderer->Blit(whiteSidesTex, 58, 683, &whiteButtonRect, 1.0f);
+	}
+	if (whiteButtonRightFlag == true)
+	{
+		App->renderer->Blit(whiteSidesTex, 352, 688, &whiteButtonRect, 1.0f);
+	}
+
+	// If both white buttons are pressed, light up the K button and reset
+	if (whiteButtonLeftFlag == true && whiteButtonRightFlag == true)
+	{
+		kCond = true;
+		App->audio->PlayFx(skySound);
+
+		whiteButtonLeftFlag = false;
+		whiteButtonRightFlag = false;
+	}
+
+
 	p2List_item<PhysBody*>* c = circles.getFirst();
 
 	// 3RD LAYER
@@ -1028,7 +1063,7 @@ update_status ModuleSceneIntro::Update()
 	}
 
 
-
+	// Draw ramps control
 	if (middleRampFlag == false)
 	{
 		App->renderer->Blit(longTube, 141, 51, NULL, 1.0f);
@@ -1059,6 +1094,8 @@ update_status ModuleSceneIntro::Update()
 		kCond = false;
 		yCond = false;
 	}
+
+
 
 	// Scores Text
 	sprintf_s(scoreText, 10, "%d", currentScore);
@@ -1376,5 +1413,17 @@ void ModuleSceneIntro::OnCollision(PhysBody* bodyA, PhysBody* bodyB)
 				secondCreateBall = true;
 			}
 		}
+	}
+
+	// White buttons collisions
+	if (bodyA->body == whiteButtonLeft->body || bodyB->body == whiteButtonLeft->body)
+	{
+		whiteButtonLeftFlag = true;
+		App->audio->PlayFx(barSound);
+	}
+	if (bodyA->body == whiteButtonRight->body || bodyB->body == whiteButtonRight->body)
+	{
+		whiteButtonRightFlag = true;
+		App->audio->PlayFx(barSound);
 	}
 }
