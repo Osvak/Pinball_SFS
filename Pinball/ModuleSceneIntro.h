@@ -4,6 +4,7 @@
 #include "p2Point.h"
 #include "Globals.h"
 #define MAX_SCORES 50
+#define SLOWING_TIME 10
 
 class PhysBody;
 
@@ -107,6 +108,7 @@ public:
 	PhysBody* leftRampOutter;
 	PhysBody* leftRampInner;
 	PhysBody* leftRampWall;
+	PhysBody* leftRampTopWall;
 	PhysBody* leftRampInCollider;
 	PhysBody* leftRampOutCollider;
 	PhysBody* leftRampOutCollider2;

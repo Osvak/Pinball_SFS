@@ -224,8 +224,8 @@ bool ModuleSceneIntro::Start()
 			256, 102,
 			235, 102,
 			196, 102,
-			216, 93,
-			310, 93,
+			216, 87,
+			310, 87,
 			310, 154,
 		}; App->physics->CreateChain(0, 0, lobbyTopWallPath, 26, b2_staticBody);
 
@@ -418,12 +418,18 @@ bool ModuleSceneIntro::Start()
 			101, 479,
 			63, 515,
 		}; leftRampInner = App->physics->CreateChain(0, 0, leftRampPathIn, 18, b2_staticBody);
-		int leftRampWallPath[8]{
+		int leftRampWallPath[8] = {
 			74, 546,
 			69, 551,
 			58, 520,
 			63, 515,
 		}; leftRampWall = App->physics->CreateChain(0, 0, leftRampWallPath, 8, b2_staticBody);
+		int leftRampTopWallPath[8] = {
+			69, 427,
+			87, 440,
+			103, 451,
+			87, 440,
+		}; leftRampTopWall = App->physics->CreateChain(0, 0, leftRampTopWallPath, 8, b2_staticBody);
 
 		// Middle Ramp
 		int middleRampRightPath[44] = {
@@ -530,7 +536,7 @@ bool ModuleSceneIntro::Start()
 
 	// Middle Ramp Colliders
 	middleRampInCollider = App->physics->CreateRectangleSensor(191, 370, 10, 10);
-	middleRampOutCollider = App->physics->CreateRectangleSensor(297, 72, 10, 10);
+	middleRampOutCollider = App->physics->CreateRectangleSensor(295, 72, 10, 10);
 	middleRampOutCollider2 = App->physics->CreateRectangleSensor(192, 405, 10, 10);
 
 	// White Buttons Colliders
@@ -755,12 +761,14 @@ update_status ModuleSceneIntro::Update()
 		leftRampOutter->body->SetActive(true);
 		leftRampInner->body->SetActive(true);
 		leftRampWall->body->SetActive(false);
+		leftRampTopWall->body->SetActive(false);
 	}
 	else
 	{
 		leftRampOutter->body->SetActive(false);
 		leftRampInner->body->SetActive(false);
 		leftRampWall->body->SetActive(true);
+		leftRampTopWall->body->SetActive(true);
 	}
 
 	// Middle Ramp Control
@@ -982,10 +990,21 @@ update_status ModuleSceneIntro::Update()
 		App->renderer->Blit(whiteSidesTex, 352, 688, &whiteButtonRect, 1.0f);
 	}
 
-	// If both white buttons are pressed, light up the K button and reset
+	// If both white buttons are pressed, light up a button in SKY word and reset
 	if (whiteButtonLeftFlag == true && whiteButtonRightFlag == true)
 	{
-		kCond = true;
+		if (sCond == false) {
+			sCond = true;
+		}
+		else if(kCond == false)
+		{
+			kCond = true;
+		}
+		else if (yCond == false)
+		{
+			yCond = true;
+		}
+
 		App->audio->PlayFx(skySound);
 
 		whiteButtonLeftFlag = false;
@@ -1023,6 +1042,7 @@ update_status ModuleSceneIntro::Update()
 		}
 		sc->data->body->SetFixedRotation(false);
 
+
 		//Ball 2 to mouse debug
 
 		if (App->input->GetKey(SDL_SCANCODE_Z) == KEY_DOWN) {
@@ -1049,6 +1069,7 @@ update_status ModuleSceneIntro::Update()
 			start = false;
 		}
 		c->data->body->SetFixedRotation(false);
+
 
 		//Ball 1 to mouse debug
 
